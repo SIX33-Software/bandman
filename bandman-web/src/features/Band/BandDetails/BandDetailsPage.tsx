@@ -11,10 +11,10 @@ import {
 } from "@/store/api/bandApi";
 import { useGetSetsByBandQuery } from "@/store/api/setApi";
 import { useGetGigsByBandQuery } from "@/store/api/gigApi";
-import Header from "@/components/Header";
 import { Tabs, type TabsOption } from "@/components/ui/Tabs";
 import { Button } from "@/components/ui/Button";
 import type { BandMemberWithUser, Song, Set, Gig, BandRole } from "@/types";
+import { CircleNotchSolid } from "@mynaui/icons-react";
 
 type TabValue = "members" | "songs" | "sets" | "gigs";
 
@@ -348,7 +348,7 @@ const GigsSection = ({ gigs, isLoading, bandId }: { gigs?: Gig[]; isLoading: boo
 // Loading State Component
 const LoadingState = ({ text }: { text: string }) => (
 	<div className="flex flex-col items-center justify-center py-12">
-		<div className="w-8 h-8 border-2 border-zinc-700 border-t-white rounded-full animate-spin mb-4" />
+		<CircleNotchSolid className="w-8 h-8 animate-spin mb-4" />
 		<p className="text-zinc-500">{text}</p>
 	</div>
 );
@@ -435,17 +435,14 @@ export const BandDetailsPage = () => {
 
 	if (!band) {
 		return (
-			<div className="min-h-screen bg-zinc-950 text-white">
-				<Header />
-				<main className="max-w-4xl mx-auto px-6 py-12">
-					<div className="text-center">
-						<h1 className="text-2xl font-bold mb-4">Band not found</h1>
-						<Link to="/">
-							<Button variant="secondary">Go back home</Button>
-						</Link>
-					</div>
-				</main>
-			</div>
+			<main className="max-w-4xl mx-auto px-6 py-12">
+				<div className="text-center">
+					<h1 className="text-2xl font-bold mb-4">Band not found</h1>
+					<Link to="/">
+						<Button variant="secondary">Go back home</Button>
+					</Link>
+				</div>
+			</main>
 		);
 	}
 

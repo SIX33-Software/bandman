@@ -1,4 +1,5 @@
 import { type BaseEntity } from "./api.types";
+import { type Song } from "./song.types";
 
 // ============ SET ============
 export interface Set extends BaseEntity {
@@ -17,16 +18,20 @@ export interface SetSong {
 	set_id: string;
 	song_id: string;
 	position: number;
+	note: string | null;
 	added_at: string;
+	song?: Song;
 }
 
 export interface AddSetSongRequest {
 	song_id: string;
 	position: number;
+	note?: string;
 }
 
-export interface UpdateSetSongPositionRequest {
-	position: number;
+export interface UpdateSetSongRequest {
+	position?: number;
+	note?: string;
 }
 
 export interface ReorderSetSongsRequest {

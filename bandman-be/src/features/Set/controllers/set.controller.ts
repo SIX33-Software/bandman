@@ -11,7 +11,7 @@ import {
 	JsonController,
 } from "routing-controllers";
 import { SetService } from "../services";
-import { CreateSetDto, UpdateSetDto, AddSetSongDto, UpdateSetSongPositionDto, ReorderSetSongsDto } from "../types";
+import { CreateSetDto, UpdateSetDto, AddSetSongDto, UpdateSetSongDto, ReorderSetSongsDto } from "../types";
 import { PaginationDto } from "@/common/dto";
 
 @JsonController("/sets")
@@ -60,12 +60,8 @@ export class SetController {
 	}
 
 	@Put("/:id/songs/:songId")
-	async updateSongPosition(
-		@Param("id") id: string,
-		@Param("songId") songId: string,
-		@Body() body: UpdateSetSongPositionDto
-	) {
-		return SetService.updateSongPosition(id, songId, body.position);
+	async updateSong(@Param("id") id: string, @Param("songId") songId: string, @Body() body: UpdateSetSongDto) {
+		return SetService.updateSong(id, songId, body);
 	}
 
 	@Put("/:id/songs/reorder")

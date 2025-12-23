@@ -51,7 +51,12 @@ export const sessionApi = baseApi.injectEndpoints({
         url: `/sessions/${id}/end`,
         method: "POST",
       }),
-      invalidatesTags: (_result, _error, id) => [{ type: "Session", id }],
+      invalidatesTags: (_result, _error, id) => [
+        { type: "Session", id },
+        // We can't easily know the bandId here without the result, 
+        // but if we have the result we can invalidate the active session tag
+        ...(_result?.data ? [{ type: "Session" as const, id: `BAND_${_result.data.band_id}_ACTIVE` }] : []),
+      ],
     }),
 
     // Pause session

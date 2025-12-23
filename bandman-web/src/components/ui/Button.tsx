@@ -1,8 +1,8 @@
 import React from "react";
 import classNames from "classnames";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost";
-export type ButtonSize = "sm" | "md" | "lg";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "outline";
+export type ButtonSize = "sm" | "md" | "lg" | "icon";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	variant?: ButtonVariant;
@@ -16,12 +16,14 @@ const variantStyles: Record<ButtonVariant, string> = {
 	primary: "bg-white text-zinc-900 hover:bg-zinc-200",
 	secondary: "border border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-white bg-transparent",
 	ghost: "text-zinc-400 hover:text-white bg-transparent",
+	outline: "border border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-white bg-transparent",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
 	sm: "py-2 px-4 text-xs",
 	md: "py-3 px-6 text-sm",
 	lg: "py-4 px-8 text-base",
+	icon: "p-2",
 };
 
 export const Button = ({
@@ -41,7 +43,7 @@ export const Button = ({
 		<button
 			disabled={isDisabled}
 			className={classNames(
-				"rounded-full font-medium transition-colors",
+				"inline-flex items-center justify-center rounded-full font-medium transition-colors",
 				"disabled:opacity-50 disabled:cursor-not-allowed",
 				variantStyles[variant],
 				sizeStyles[size],

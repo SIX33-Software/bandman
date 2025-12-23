@@ -10,8 +10,16 @@ const BandCard = ({ band }: { band: Band }) => {
 	return (
 		<Link
 			to={`/bands/${band.id}`}
-			className="w-96 h-52 bg-zinc-900/30 backdrop-blur-2xl rounded-xl flex flex-col items-start justify-end p-5 gap-1 hover:bg-zinc-900/50 transition-colors cursor-pointer"
+			className="w-96 h-52 border-2 border-zinc-900 relative bg-zinc-900/30 backdrop-blur-2xl overflow-hidden rounded-xl flex flex-col items-start justify-end p-5 gap-1 hover:bg-zinc-900/50 transition-colors cursor-pointer"
 		>
+			{band.image_url && (
+				<img
+					src={band.image_url}
+					alt={band.name}
+					className="absolute w-full h-full top-0 left-0 object-cover -z-1 mask-b-from-0% opacity-50 mask-t-from-0%"
+				/>
+			)}
+
 			{band.image_url ? (
 				<img src={band.image_url} alt={band.name} className="mb-auto w-12 h-12 rounded-full object-cover" />
 			) : (
@@ -19,7 +27,7 @@ const BandCard = ({ band }: { band: Band }) => {
 					{band.name.charAt(0).toUpperCase()}
 				</div>
 			)}
-			<div className="font-heading text-2xl font-bold text-white">{band.name}</div>
+			<div className="font-heading text-2xl text-white">{band.name}</div>
 			{band.description && <div className="text-zinc-500 text-sm line-clamp-1">{band.description}</div>}
 		</Link>
 	);

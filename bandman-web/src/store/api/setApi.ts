@@ -8,7 +8,7 @@ import type {
   UpdateSetRequest,
   SetSong,
   AddSetSongRequest,
-  UpdateSetSongPositionRequest,
+  UpdateSetSongRequest,
   ReorderSetSongsRequest,
 } from "@/types";
 
@@ -107,10 +107,10 @@ export const setApi = baseApi.injectEndpoints({
       ],
     }),
 
-    // Update song position in set
-    updateSetSongPosition: builder.mutation<
+    // Update song in set
+    updateSetSong: builder.mutation<
       ApiResponse<SetSong>,
-      { setId: string; songId: string; data: UpdateSetSongPositionRequest }
+      { setId: string; songId: string; data: UpdateSetSongRequest }
     >({
       query: ({ setId, songId, data }) => ({
         url: `/sets/${setId}/songs/${songId}`,
@@ -162,7 +162,7 @@ export const {
   useGetSetSongsQuery,
   useLazyGetSetSongsQuery,
   useAddSetSongMutation,
-  useUpdateSetSongPositionMutation,
+  useUpdateSetSongMutation,
   useReorderSetSongsMutation,
   useRemoveSetSongMutation,
 } = setApi;

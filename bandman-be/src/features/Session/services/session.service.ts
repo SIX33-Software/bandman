@@ -127,10 +127,18 @@ class SessionServiceClass {
   }
 
   async endSession(id: string): Promise<ApiResponse<Session>> {
-    return this.update(id, {
-      status: "ended",
-      ended_at: new Date().toISOString(),
-    });
+    const { data, error } = await supabase
+      .from(this.tableName)
+      .delete()
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      return { success: false, message: error.message };
+    }
+
+    return { success: true, data: data as Session };
   }
 
   async pauseSession(id: string): Promise<ApiResponse<Session>> {

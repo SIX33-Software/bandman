@@ -27,11 +27,12 @@ export interface SetSong {
   set_id: string;
   song_id: string;
   position: number;
+  note: string | null;
   added_at: string;
 }
 
-export type SetSongInsert = Omit<SetSong, "id" | "added_at">;
-export type SetSongUpdate = Partial<Pick<SetSong, "position">>;
+export type SetSongInsert = Omit<SetSong, "id" | "added_at" | "note"> & { note?: string | null };
+export type SetSongUpdate = Partial<Pick<SetSong, "position" | "note">>;
 
 // ============ DTOs ============
 export class CreateSetDto implements SetInsert {
@@ -66,12 +67,21 @@ export class AddSetSongDto {
   @IsInt()
   @Min(0)
   position!: number;
+
+  @IsOptional()
+  @IsString()
+  note?: string;
 }
 
-export class UpdateSetSongPositionDto {
+export class UpdateSetSongDto {
+  @IsOptional()
   @IsInt()
   @Min(0)
-  position!: number;
+  position?: number;
+
+  @IsOptional()
+  @IsString()
+  note?: string;
 }
 
 export class ReorderSetSongsDto {
