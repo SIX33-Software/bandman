@@ -78,7 +78,7 @@ export const Select = ({
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0 }}
 						transition={{ type: "spring", stiffness: 500, damping: 30 }}
-						className="absolute mt-1 z-10 max-h-60 w-full overflow-auto rounded-2xl bg-zinc-900/30 backdrop-blur-xl p-1 text-base sm:text-sm"
+						className="absolute mt-1 z-10 max-h-60 w-full overflow-auto rounded-2xl bg-zinc-900/70 backdrop-blur-2xl p-1 text-base sm:text-sm"
 					>
 						{options.length === 0 ? (
 							<div className="relative cursor-default select-none px-5 py-3 text-zinc-500">No options available</div>
@@ -90,7 +90,7 @@ export const Select = ({
 									className={classNames(
 										"relative cursor-pointer select-none px-6 py-3 rounded-xl transition-colors duration-200 hover:bg-zinc-900",
 										{
-											"bg-zinc-800 text-zinc-100": currentValue === option.value,
+											"bg-zinc-900 text-zinc-100": currentValue === option.value,
 											"text-zinc-300": currentValue !== option.value,
 										}
 									)}

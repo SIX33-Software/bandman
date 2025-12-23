@@ -1,6 +1,6 @@
-import { Controller, Get } from "routing-controllers";
+import { Controller, Get, JsonController } from "routing-controllers";
 
-@Controller("/health")
+@JsonController("/health")
 export class HealthController {
 	@Get("/")
 	check() {

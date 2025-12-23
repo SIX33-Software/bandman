@@ -9,7 +9,7 @@ interface AnimatedBackgroundLinesProps {
 export const AnimatedBackgroundLines = ({
 	className = "",
 	lineColor = "rgba(255, 255, 255, 0.2)",
-	lineCount = 50,
+	lineCount = 70,
 }: AnimatedBackgroundLinesProps) => {
 	// Generate an array of indices for the lines
 	const lines = Array.from({ length: lineCount }, (_, i) => i);
@@ -35,17 +35,17 @@ export const AnimatedBackgroundLines = ({
 						x1={-50 + (i * 200) / lineCount}
 						y1={-90 + (i * 60) / lineCount}
 						x2={-50 + (i * 200) / lineCount - 50}
-						y2={30 + (i * 60) / lineCount}
+						y2={0 + (i * 90) / lineCount}
 						stroke={lineColor}
-						initial={{ strokeWidth: 0.05 }}
+						initial={{ strokeWidth: 0.25 }}
 						animate={{
-							strokeWidth: [0.05, 1, 0.05],
+							strokeWidth: [0.25, 1, 0.25],
 						}}
 						transition={{
 							duration: 3,
 							repeat: Infinity,
 							ease: "easeInOut",
-							delay: i * 0.15,
+							delay: i * 0.1,
 							repeatDelay: 3,
 						}}
 					/>

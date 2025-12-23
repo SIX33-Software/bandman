@@ -12,11 +12,16 @@
   },
   "dependencies": {
     "@mynaui/icons-react": "^0.3.9",
+    "@reduxjs/toolkit": "^2.11.2",
+    "@supabase/supabase-js": "^2.89.0",
     "@tailwindcss/vite": "^4.1.18",
+    "@types/lodash": "^4.17.21",
     "classnames": "^2.5.1",
     "framer-motion": "^12.23.26",
+    "lodash": "^4.17.21",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-redux": "^9.2.0",
     "react-router": "^7.11.0",
     "tailwindcss": "^4.1.18"
   },
@@ -33,6 +38,7 @@
     "globals": "^16.5.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "vite-tsconfig-paths": "^6.0.3"
   }
 }

@@ -10,7 +10,8 @@
     "dev": "nodemon",
     "build": "tsc",
     "serve": "node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "npx prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -25,6 +26,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^25.0.3",
+    "@types/socket.io": "^3.0.1",
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
@@ -38,6 +40,7 @@
     "express": "^5.2.1",
     "reflect-metadata": "^0.2.2",
     "routing-controllers": "^0.11.3",
+    "socket.io": "^4.8.2",
     "tsconfig-paths": "^4.2.0"
   }
 }

@@ -1,24 +1,23 @@
 {
-	"compilerOptions": {
-		"target": "esnext",
-		"module": "commonjs",
-		"lib": ["ESNext", "esnext.asynciterable"],
-		"experimentalDecorators": true,
-		"emitDecoratorMetadata": true,
-		"esModuleInterop": true,
-		"outDir": "./dist",
-		"rootDir": "./src",
-		"strict": true,
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"baseUrl": "./src",
-		"paths": {
-			"@/*": ["*"]
-		}
-	},
-	"include": ["src/**/*"],
-	"exclude": ["node_modules"]
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "lib": ["ESNext", "esnext.asynciterable"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }
-
