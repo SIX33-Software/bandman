@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useAppDispatch } from "@/store/hooks";
 import { ChordLyrics } from "@/components/ui/ChordLyrics";
 import { Button } from "@/components/ui/Button";
-import { AnimatePresence, motion, type PanInfo } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, List, X, Music, XOctagonSolid } from "@mynaui/icons-react";
 import classNames from "classnames";
 import type { NotationSystem } from "@/utils/chords";
@@ -139,15 +139,6 @@ const LiveSessionPage = () => {
 			});
 		}
 	};
-	// Swipe handlers
-	const onDragEnd = (_event: DragEvent, info: PanInfo) => {
-		const threshold = 100;
-		if (info.offset.x < -threshold) {
-			handleNextSong();
-		} else if (info.offset.x > threshold) {
-			handlePrevSong();
-		}
-	};
 
 	if (isSessionLoading || isSetLoading || isSongsLoading) {
 		return <div className="flex items-center justify-center h-dvh text-white">Loading session...</div>;
@@ -162,7 +153,7 @@ const LiveSessionPage = () => {
 	return (
 		<div className="fixed inset-0 h-dvh w-full bg-zinc-950 flex flex-col overflow-hidden">
 			{/* Header */}
-			<header className="h-14 border-b border-zinc-800 flex items-center justify-between px-4 bg-zinc-900/50 backdrop-blur-md z-10">
+			<header className="h-14 border-b border-zinc-800 flex items-center justify-between px-4 bg-zinc-900/10 backdrop-blur-lg z-10">
 				<div className="flex items-center gap-3 flex-1 min-w-0">
 					<Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="w-8 h-8 p-0 shrink-0">
 						<X className="w-5 h-5" />
@@ -198,26 +189,23 @@ const LiveSessionPage = () => {
 					<motion.div
 						key={currentSong?.id || "empty"}
 						className="h-full w-full overflow-y-auto p-4 pb-48 pt-12"
-						style={{ touchAction: "pan-y" }}
 						initial={{ opacity: 0, x: 20 }}
 						animate={{ opacity: 1, x: 0 }}
 						exit={{ opacity: 0, x: -20 }}
 						transition={{ duration: 0.2 }}
-						drag={isOwner ? "x" : false}
-						dragConstraints={{ left: 0, right: 0 }}
-						dragElastic={0.2}
-						onDragEnd={onDragEnd}
 					>
 						{currentSong && currentSong.song ? (
 							<div className="max-w-3xl mx-auto">
-								<div className="mb-6">
+								<div className="mb-8">
 									<h2 className="text-2xl font-bold text-white mb-1">{currentSong.song.title}</h2>
 									<p className="text-zinc-400">{currentSong.song.artist}</p>
 									{currentSong.note && (
-										<div className="mt-2 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded text-yellow-200 text-sm">
-											Note: {currentSong.note}
+										<div className="my-4 flex flex-col gap-2 text-zinc-300 text-sm">
+											<p className="text-amber-400">Note</p>
+											{currentSong.note}
 										</div>
 									)}
+									<div className="w-full h-px bg-zinc-800" />
 								</div>
 
 								<div style={{ fontSize: `${fontSize}px` }}>
@@ -235,7 +223,7 @@ const LiveSessionPage = () => {
 			</div>
 
 			{/* Controls Footer */}
-			<div className="absolute bottom-0 left-0 right-0 bg-zinc-900/90 backdrop-blur-md border-t border-zinc-800 p-4 pb-8 z-20">
+			<div className="fixed -bottom-1 left-0 right-0 bg-zinc-900/50 backdrop-blur-md border-t border-zinc-800 p-4 pb-8 z-20">
 				<div className="max-w-3xl mx-auto flex items-center justify-between gap-5">
 					<div className="flex items-center gap-2 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 						<div className="flex items-center bg-zinc-800 rounded-lg p-1 shrink-0">
@@ -326,7 +314,7 @@ const LiveSessionPage = () => {
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
-							className="absolute inset-0 bg-black/50 z-30 backdrop-blur-sm"
+							className="fixed inset-0 bg-black/50 z-30 backdrop-blur-lg"
 							onClick={() => setIsQuickListOpen(false)}
 						/>
 						<motion.div
@@ -334,7 +322,7 @@ const LiveSessionPage = () => {
 							animate={{ x: 0 }}
 							exit={{ x: "100%" }}
 							transition={{ type: "spring", damping: 25, stiffness: 200 }}
-							className="absolute top-0 right-0 bottom-0 w-full sm:w-80 bg-zinc-900/70 backdrop-blur-lg border-l border-zinc-800 z-40 flex flex-col shadow-2xl"
+							className="fixed top-0 right-0 bottom-0 w-full sm:w-80 bg-zinc-950/40 z-40 flex flex-col"
 						>
 							<div className="p-4 border-b border-zinc-800 flex items-center justify-between">
 								<h3 className="font-bold text-white">Set List</h3>
@@ -350,7 +338,7 @@ const LiveSessionPage = () => {
 										className={classNames(
 											"w-full text-left p-4 border-b border-zinc-800/50 hover:bg-zinc-800 transition-colors flex items-center gap-3",
 											{
-												"bg-zinc-800/50": currentSong?.id === setSong.id,
+												"bg-zinc-800/30": currentSong?.id === setSong.id,
 												"text-primary-400": currentSong?.id === setSong.id,
 												"text-zinc-300": currentSong?.id !== setSong.id,
 											}
@@ -361,7 +349,7 @@ const LiveSessionPage = () => {
 											<div className="font-medium truncate">{setSong.song?.title || "Unknown"}</div>
 											<div className="text-xs text-zinc-500 truncate">{setSong.song?.artist}</div>
 										</div>
-										{setSong.note && <div className="w-2 h-2 rounded-full bg-yellow-500" title="Has note" />}
+										{setSong.note && <div className="w-2 h-2 rounded-full bg-amber-500" title="Has note" />}
 									</button>
 								))}
 							</div>

@@ -67,13 +67,13 @@ export const MembersSection = ({
 					key={member.user_id}
 					initial={{ opacity: 0, y: 10 }}
 					animate={{ opacity: 1, y: 0 }}
-					className="bg-zinc-900/50 border border-zinc-800 backdrop-blur-xl rounded-xl p-4 flex items-center justify-between"
+					className="bg-zinc-900/50 border border-zinc-800 backdrop-blur-xl rounded-xl p-4 flex items-start md:items-center justify-between overflow-hidden"
 				>
-					<div className="flex items-center gap-3">
-						<div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-sm font-medium text-zinc-300">
+					<div className="flex  gap-3 flex-1 overflow-hidden flex-col md:flex-row md:items-center">
+						<div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-sm font-medium text-zinc-300 shrink-0">
 							{member.user?.name?.[0]?.toUpperCase() || member.user?.email?.[0]?.toUpperCase() || "?"}
 						</div>
-						<div>
+						<div className="flex-1 whitespace-pre-wrap wrap-break-word">
 							<p className="text-white font-medium">{member.user?.name || "Unknown User"}</p>
 							<p className="text-zinc-500 text-sm">{member.user?.email}</p>
 						</div>

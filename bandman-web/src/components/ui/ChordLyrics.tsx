@@ -11,66 +11,92 @@ interface ChordLyricsProps {
 	notation?: NotationSystem;
 }
 
-interface ChordPosition {
-	chord: string;
-	position: number; // character position in the lyrics line
+interface Chunk {
+	text: string;
+	chord: string | null;
 }
 
-interface ParsedLine {
-	lyrics: string;
-	chords: ChordPosition[];
-	hasChords: boolean;
+interface Word {
+	chunks: Chunk[];
 }
 
 // Regex to match chords in brackets: {Am}, [G], {F#m7}, etc.
 const CHORD_REGEX = /[{[]([A-GH][#b]?(?:m|maj|min|dim|aug|sus[24]?|add[0-9]+|[0-9]+)?(?:\/[A-GH][#b]?)?)[}\]]/gi;
 
-/**
- * Parses a line with inline chord syntax: {Chord} or [Chord]
- * Returns the clean lyrics text and chord positions
- *
- * Example: "{Am}Hello {G}world" -> lyrics: "Hello world", chords: [{chord: "Am", position: 0}, {chord: "G", position: 6}]
- */
-function parseLine(line: string): ParsedLine {
-	const chords: ChordPosition[] = [];
-	let lyrics = "";
+function parseLineToChunks(line: string): Chunk[] {
+	const chunks: Chunk[] = [];
 	let lastIndex = 0;
 	let match: RegExpExecArray | null;
+	let currentChord: string | null = null;
 
 	CHORD_REGEX.lastIndex = 0;
 
 	while ((match = CHORD_REGEX.exec(line)) !== null) {
-		// Add text before the chord to lyrics
 		const textBefore = line.slice(lastIndex, match.index);
-		lyrics += textBefore;
 
-		// Record chord at current position in the clean lyrics
-		chords.push({
-			chord: match[1],
-			position: lyrics.length,
+		chunks.push({
+			text: textBefore,
+			chord: currentChord,
 		});
 
+		currentChord = match[1];
 		lastIndex = match.index + match[0].length;
 	}
 
-	// Add remaining text after last chord
-	lyrics += line.slice(lastIndex);
+	// Add remaining text
+	chunks.push({
+		text: line.slice(lastIndex),
+		chord: currentChord,
+	});
 
-	return {
-		lyrics,
-		chords,
-		hasChords: chords.length > 0,
-	};
+	// Filter out empty chunks at the start if they have no chord
+	if (chunks.length > 0 && chunks[0].text === "" && chunks[0].chord === null) {
+		chunks.shift();
+	}
+
+	return chunks;
+}
+
+function parseLineToWords(line: string): Word[] {
+	const chunks = parseLineToChunks(line);
+	const words: Word[] = [];
+	let currentWordChunks: Chunk[] = [];
+
+	for (const chunk of chunks) {
+		const parts = chunk.text.split(/(\s+)/);
+		let isFirstPart = true;
+
+		for (const part of parts) {
+			if (part === "") continue;
+
+			const chordForPart = isFirstPart ? chunk.chord : null;
+			if (isFirstPart) isFirstPart = false;
+
+			if (/^\s+$/.test(part)) {
+				// It's whitespace
+				currentWordChunks.push({ text: part, chord: chordForPart });
+				words.push({ chunks: currentWordChunks });
+				currentWordChunks = [];
+			} else {
+				// It's text
+				currentWordChunks.push({ text: part, chord: chordForPart });
+			}
+		}
+	}
+
+	if (currentWordChunks.length > 0) {
+		words.push({ chunks: currentWordChunks });
+	}
+
+	return words;
 }
 
 /**
  * ChordLyrics component displays lyrics with chords positioned above.
  * Use chord syntax: {Am}lyrics or [G]lyrics
  *
- * The chord will appear directly above the character that follows it.
- * Example: "{Am}Hello {G}world" renders as:
- *   Am    G
- *   Hello world
+ * The chord will appear directly above the text that follows it.
+ * Supports text wrapping by words.
  */
 export const ChordLyrics = ({
 	content,
@@ -80,58 +106,51 @@ export const ChordLyrics = ({
 	transpose = 0,
 	notation = "standard",
 }: ChordLyricsProps) => {
-	const lines = useMemo<ParsedLine[]>(() => {
+	const lines = useMemo(() => {
 		if (!content) return [];
-		return content.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n").map(parseLine);
+		return content.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
 	}, [content]);
 
-	const renderLine = (line: ParsedLine, lineIndex: number) => {
-		const isEmptyLine = line.lyrics.trim() === "" && line.chords.length === 0;
+	return (
+		<div className={classNames("font-mono", className)}>
+			{lines.map((line, lineIndex) => {
+				if (line.trim() === "") {
+					return <div key={lineIndex} className="h-[1.5em]" />;
+				}
 
-		if (isEmptyLine) {
-			return (
-				<div key={lineIndex} className="h-6">
-					{"\u00A0"}
-				</div>
-			);
-		}
+				const words = parseLineToWords(line);
 
-		// If no chords or chords are hidden, just render the lyrics
-		if (!line.hasChords || !showChords) {
-			return (
-				<div key={lineIndex} className="text-zinc-300">
-					{line.lyrics || "\u00A0"}
-				</div>
-			);
-		}
+				return (
+					<div key={lineIndex} className="flex flex-wrap items-end leading-[3]">
+						{words.map((word, wordIndex) => (
+							<div key={wordIndex} className="inline-block whitespace-pre-wrap">
+								{word.chunks.map((chunk, chunkIndex) => {
+									const transformedChord = chunk.chord ? transformChord(chunk.chord, transpose, notation) : null;
 
-		// Render with chords above - using relative positioning
-		return (
-			<div key={lineIndex} className="mb-1">
-				{/* Chord line */}
-				<div className="relative h-5 font-mono">
-					{line.chords.map((chordPos, chordIndex) => {
-						const transformedChord = transformChord(chordPos.chord, transpose, notation);
-						return (
-							<span
-								key={chordIndex}
-								className={classNames("absolute font-bold text-amber-400 whitespace-nowrap", chordClassName)}
-								style={{
-									left: `${chordPos.position}ch`,
-								}}
-							>
-								{transformedChord}
-							</span>
-						);
-					})}
-				</div>
-				{/* Lyrics line */}
-				<div className="text-zinc-300 font-mono whitespace-pre">{line.lyrics || "\u00A0"}</div>
-			</div>
-		);
-	};
-
-	return <div className={classNames("font-mono", className)}>{lines.map(renderLine)}</div>;
+									return (
+										<span key={chunkIndex} className="relative inline-block">
+											{showChords && transformedChord && (
+												<span
+													className={classNames(
+														"absolute bottom-[1.7em] left-0 font-bold text-amber-400 whitespace-nowrap",
+														chordClassName
+													)}
+													style={{ fontSize: "0.9em" }}
+												>
+													{transformedChord}
+												</span>
+											)}
+											<span className="text-zinc-300">{chunk.text}</span>
+										</span>
+									);
+								})}
+							</div>
+						))}
+					</div>
+				);
+			})}
+		</div>
+	);
 };
 
 /**

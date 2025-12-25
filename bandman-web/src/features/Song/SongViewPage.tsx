@@ -85,7 +85,7 @@ export const SongViewPage = () => {
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.5 }}
-			className="max-w-4xl mx-auto"
+			className="max-w-4xl mx-auto pb-16"
 		>
 			{/* Breadcrumb */}
 			<div className="flex items-center gap-2 text-sm text-zinc-500 mb-6">
@@ -176,7 +176,7 @@ export const SongViewPage = () => {
 			{/* Notes */}
 			{song.notes && (
 				<div className="mb-8">
-					<h2 className="text-yellow-500 text-sm mb-2">Notes</h2>
+					<h2 className="text-amber-500 text-sm mb-2">Notes</h2>
 					<p className="text-zinc-300 whitespace-pre-wrap">{song.notes}</p>
 				</div>
 			)}
@@ -283,9 +283,11 @@ export const SongViewPage = () => {
 			)}
 
 			{/* Back button */}
-			<div className="mt-8">
+			<div className="mt-8 w-fit mx-auto">
 				<Link to={bandId ? `/bands/${bandId}?tab=songs` : "/"}>
-					<Button variant="ghost">← Back</Button>
+					<Button variant="ghost">
+						<span className="mr-2">←</span> Back
+					</Button>
 				</Link>
 			</div>
 		</motion.div>

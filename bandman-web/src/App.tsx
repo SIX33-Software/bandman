@@ -1,8 +1,15 @@
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import { useEffect } from "react";
 
 function App() {
+	const location = useLocation();
+
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, [location.pathname]);
+
 	return (
 		<div className="min-h-dvh w-full h-fit flex flex-col">
 			<Header />

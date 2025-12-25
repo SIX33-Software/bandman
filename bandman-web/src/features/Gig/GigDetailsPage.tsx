@@ -33,31 +33,33 @@ const GigDetailsPage = () => {
 	}
 
 	return (
-		<div className="max-w-4xl mx-auto">
-			<div className="flex items-start justify-between mb-8">
+		<div className="max-w-4xl mx-auto pb-16">
+			<div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
 				<div>
-					<h1 className="text-3xl font-bold text-white">{gig.name}</h1>
-					<div className="text-zinc-400 mt-2 flex items-center gap-2">
+					<h1 className="text-2xl sm:text-3xl font-bold text-white">{gig.name}</h1>
+					<div className="text-zinc-400 mt-2 flex items-center gap-2 text-sm sm:text-base">
 						<span>{dayjs(gig.date).format("ddd D MMM, YYYY")}</span>
 						{gig.start_time && <span>• {gig.start_time}</span>}
 					</div>
 				</div>
-				<div className="flex gap-2">
-					<Link to={`/bands/${bandId}/gigs/${id}/edit`}>
-						<Button variant="secondary">Edit</Button>
+				<div className="flex gap-2 w-full sm:w-auto">
+					<Link to={`/bands/${bandId}/gigs/${id}/edit`} className="flex-1 sm:flex-none">
+						<Button variant="secondary" className="w-full sm:w-auto">
+							Edit
+						</Button>
 					</Link>
 					<Button
 						variant="ghost"
 						onClick={handleDelete}
 						disabled={isDeleting}
-						className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
+						className="text-red-400 hover:text-red-300 hover:bg-red-400/10 flex-1 sm:flex-none"
 					>
 						{isDeleting ? "Deleting..." : "Delete"}
 					</Button>
 				</div>
 			</div>
 
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
 				<div>
 					<dt className="text-sm text-zinc-500 mb-1">Venue</dt>
 					<dd className="text-white">{gig.venue || "Not specified"}</dd>
@@ -84,7 +86,7 @@ const GigDetailsPage = () => {
 				<>
 					<div className="border-t border-zinc-800 my-8" />
 					<div>
-						<h3 className="text-sm text-yellow-500 mb-2">Notes</h3>
+						<h3 className="text-sm text-amber-500 mb-2">Notes</h3>
 						<p className="text-zinc-300 whitespace-pre-wrap">{gig.notes}</p>
 					</div>
 				</>

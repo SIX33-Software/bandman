@@ -64,7 +64,7 @@ const Header = () => {
 						role="button"
 						src="/images/logo-full.svg"
 						alt="Bandman Logo"
-						className="h-4 cursor-pointer"
+						className="h-4 cursor-pointer drop-shadow-transparent hover:drop-shadow-amber-600 drop-shadow-xl transition-all"
 					/>
 
 					{/* Desktop Menu */}

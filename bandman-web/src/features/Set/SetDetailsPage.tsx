@@ -73,13 +73,15 @@ const SetSongItem = ({
 			className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 flex items-center justify-between group hover:border-zinc-700 transition-colors relative"
 		>
 			<div className="flex items-center gap-4 flex-1 min-w-0">
-				<div
-					onPointerDown={(e) => dragControls.start(e)}
-					className="cursor-grab text-zinc-600 hover:text-zinc-400 p-1 -ml-2 touch-none"
-				>
-					<MenuSolid className="w-5 h-5" />
+				<div className="flex flex-col-reverse md:flex-row justify-center items-center gap-3">
+					<div
+						onPointerDown={(e) => dragControls.start(e)}
+						className="cursor-grab text-zinc-600 hover:text-zinc-400 p-1 touch-none"
+					>
+						<MenuSolid className="w-5 h-5" />
+					</div>
+					<span className="text-zinc-500 font-mono w-6 text-center">{index + 1}</span>
 				</div>
-				<span className="text-zinc-500 font-mono w-6 text-center">{index + 1}</span>
 				<div className="flex-1 min-w-0">
 					<div className="flex items-center gap-2 flex-wrap">
 						<p className="text-white font-medium truncate">{setSong.song?.title || "Unknown Song"}</p>
