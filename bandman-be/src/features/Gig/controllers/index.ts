@@ -1,1 +1,1 @@
-export * from "./gig.controller";
+export * from './gig.controller';

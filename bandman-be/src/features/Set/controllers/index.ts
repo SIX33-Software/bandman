@@ -1,1 +1,1 @@
-export * from "./set.controller";
+export * from './set.controller';

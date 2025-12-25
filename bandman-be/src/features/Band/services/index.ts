@@ -1,1 +1,1 @@
-export * from "./band.service";
+export * from './band.service';

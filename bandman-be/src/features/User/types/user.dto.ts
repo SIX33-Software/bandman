@@ -1,5 +1,5 @@
-import { IsEmail, IsString, IsOptional, MinLength } from "class-validator";
-import { BaseEntity } from "@/types";
+import { IsEmail, IsString, IsOptional, MinLength } from 'class-validator';
+import { BaseEntity } from '@/types';
 
 // ============ ENTITY ============
 export interface User extends BaseEntity {
@@ -8,7 +8,7 @@ export interface User extends BaseEntity {
   avatar_url: string | null;
 }
 
-export type UserInsert = Omit<User, "id" | "created_at" | "updated_at">;
+export type UserInsert = Omit<User, 'id' | 'created_at' | 'updated_at'>;
 export type UserUpdate = Partial<UserInsert>;
 
 // ============ DTOs ============

@@ -6,10 +6,9 @@
   "author": "633 Software",
   "license": "ISC",
   "scripts": {
-    "start": "ts-node -r tsconfig-paths/register src/index.ts",
+    "start": "node dist/index.js",
     "dev": "nodemon",
-    "build": "tsc",
-    "serve": "node dist/index.js",
+    "build": "tsc && tsc-alias",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "npx prettier --write ."
   },
@@ -28,6 +27,9 @@
     "@types/node": "^25.0.3",
     "@types/socket.io": "^3.0.1",
     "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
@@ -39,8 +41,6 @@
     "express": "^5.2.1",
     "reflect-metadata": "^0.2.2",
     "routing-controllers": "^0.11.3",
-    "socket.io": "^4.8.2",
-    "tsconfig-paths": "^4.2.0",
-    "ts-node": "^10.9.2"
+    "socket.io": "^4.8.2"
   }
 }

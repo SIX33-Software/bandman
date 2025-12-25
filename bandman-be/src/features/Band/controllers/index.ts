@@ -1,1 +1,1 @@
-export * from "./band.controller";
+export * from './band.controller';

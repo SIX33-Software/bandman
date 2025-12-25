@@ -1,10 +1,10 @@
-import "reflect-metadata";
-import { createExpressServer } from "routing-controllers";
-import path from "path";
+import 'reflect-metadata';
+import { createExpressServer } from 'routing-controllers';
+import path from 'path';
 
 export const app = createExpressServer({
   cors: true,
-  controllers: [path.join(__dirname, "/features/**/*.controller.ts")],
+  controllers: [path.join(__dirname, '/features/**/*.controller.{ts,js}')],
   currentUserChecker: async (action) => {
     return (action.request as any).user;
   },

@@ -1,7 +1,7 @@
-import { Request } from "express";
-import { AuthUser } from "@/features/Auth/types";
+import { Request } from 'express';
+import { AuthUser } from '@/features/Auth/types';
 
 export interface RequestWithUserData extends Request {
-	user?: AuthUser;
-	accessToken?: string;
+  user?: AuthUser;
+  accessToken?: string;
 }

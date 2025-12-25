@@ -5,10 +5,10 @@ import {
   IsEnum,
   IsInt,
   Min,
-} from "class-validator";
+} from 'class-validator';
 
 // ============ ENTITY ============
-export type SessionStatus = "active" | "paused" | "ended";
+export type SessionStatus = 'active' | 'paused' | 'ended';
 
 export interface Session {
   id: string;
@@ -23,15 +23,15 @@ export interface Session {
   ended_at: string | null;
 }
 
-export type SessionInsert = Omit<Session, "id" | "started_at" | "ended_at">;
+export type SessionInsert = Omit<Session, 'id' | 'started_at' | 'ended_at'>;
 export type SessionUpdate = Partial<
   Pick<
     Session,
-    | "current_song_id"
-    | "current_song_position"
-    | "status"
-    | "set_id"
-    | "ended_at"
+    | 'current_song_id'
+    | 'current_song_position'
+    | 'status'
+    | 'set_id'
+    | 'ended_at'
   >
 >;
 
@@ -40,7 +40,7 @@ export class CreateSessionDto
   implements
     Omit<
       SessionInsert,
-      "current_song_id" | "current_song_position" | "status" | "started_by"
+      'current_song_id' | 'current_song_position' | 'status' | 'started_by'
     >
 {
   @IsUUID()
@@ -65,7 +65,7 @@ export class UpdateSessionDto {
   current_song_position?: number;
 
   @IsOptional()
-  @IsEnum(["active", "paused", "ended"])
+  @IsEnum(['active', 'paused', 'ended'])
   status?: SessionStatus;
 
   @IsOptional()
@@ -84,15 +84,15 @@ export class ChangeSongDto {
 
 // ============ WebSocket Event Types ============
 export type SessionEventType =
-  | "session:started"
-  | "session:ended"
-  | "session:paused"
-  | "session:resumed"
-  | "song:changed"
-  | "song:next"
-  | "song:previous"
-  | "member:joined"
-  | "member:left";
+  | 'session:started'
+  | 'session:ended'
+  | 'session:paused'
+  | 'session:resumed'
+  | 'song:changed'
+  | 'song:next'
+  | 'song:previous'
+  | 'member:joined'
+  | 'member:left';
 
 export interface SessionEvent<T = unknown> {
   type: SessionEventType;

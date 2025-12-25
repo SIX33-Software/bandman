@@ -1,1 +1,1 @@
-export * from "./gig.service";
+export * from './gig.service';

@@ -6,9 +6,9 @@ import {
   Min,
   IsArray,
   ValidateNested,
-} from "class-validator";
-import { Type } from "class-transformer";
-import { BaseEntity } from "@/types";
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { BaseEntity } from '@/types';
 
 // ============ ENTITY ============
 export interface Set extends BaseEntity {
@@ -18,8 +18,8 @@ export interface Set extends BaseEntity {
   created_by: string;
 }
 
-export type SetInsert = Omit<Set, "id" | "created_at" | "updated_at">;
-export type SetUpdate = Partial<Omit<SetInsert, "band_id" | "created_by">>;
+export type SetInsert = Omit<Set, 'id' | 'created_at' | 'updated_at'>;
+export type SetUpdate = Partial<Omit<SetInsert, 'band_id' | 'created_by'>>;
 
 // ============ SET SONG ============
 export interface SetSong {
@@ -31,8 +31,10 @@ export interface SetSong {
   added_at: string;
 }
 
-export type SetSongInsert = Omit<SetSong, "id" | "added_at" | "note"> & { note?: string | null };
-export type SetSongUpdate = Partial<Pick<SetSong, "position" | "note">>;
+export type SetSongInsert = Omit<SetSong, 'id' | 'added_at' | 'note'> & {
+  note?: string | null;
+};
+export type SetSongUpdate = Partial<Pick<SetSong, 'position' | 'note'>>;
 
 // ============ DTOs ============
 export class CreateSetDto implements SetInsert {

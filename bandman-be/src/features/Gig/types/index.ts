@@ -1,1 +1,1 @@
-export * from "./gig.types";
+export * from './gig.types';

@@ -1,12 +1,12 @@
-import "reflect-metadata";
-import dotenv from "dotenv";
-import { createServer } from "http";
-import { app } from "@/app";
-import { initializeWebSocket } from "@/config/websocket";
+import 'reflect-metadata';
+import dotenv from 'dotenv';
+import { createServer } from 'http';
+import { app } from '@/app';
+import { initializeWebSocket } from '@/config/websocket';
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 const httpServer = createServer(app);
 

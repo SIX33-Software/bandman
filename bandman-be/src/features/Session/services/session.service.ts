@@ -1,5 +1,5 @@
-import { supabase } from "@/config/supabase";
-import { ApiResponse } from "@/types";
+import { supabase } from '@/config/supabase';
+import { ApiResponse } from '@/types';
 import {
   Session,
   SessionInsert,
@@ -7,36 +7,36 @@ import {
   SessionStatus,
   SessionEvent,
   SongChangedPayload,
-} from "../types";
-import { SetSongWithDetails } from "@/features/Set/services";
+} from '../types';
+import { SetSongWithDetails } from '@/features/Set/services';
 
 class SessionServiceClass {
-  private tableName = "sessions";
+  private tableName = 'sessions';
 
   private async assertOwner(
     sessionId: string,
-    userId: string
+    userId: string,
   ): Promise<ApiResponse<Session>> {
     if (!userId) {
-      return { success: false, message: "Missing userId" };
+      return { success: false, message: 'Missing userId' };
     }
 
     const session = await this.findById(sessionId);
     if (!session.success || !session.data) {
       return {
         success: false,
-        message: session.message || "Session not found",
+        message: session.message || 'Session not found',
       };
     }
 
-    if (session.data.status === "ended") {
-      return { success: false, message: "Session has ended" };
+    if (session.data.status === 'ended') {
+      return { success: false, message: 'Session has ended' };
     }
 
     if (session.data.started_by !== userId) {
       return {
         success: false,
-        message: "Only the session creator can control this session",
+        message: 'Only the session creator can control this session',
       };
     }
 
@@ -45,7 +45,7 @@ class SessionServiceClass {
 
   async canControl(
     sessionId: string,
-    userId: string
+    userId: string,
   ): Promise<ApiResponse<Session>> {
     return this.assertOwner(sessionId, userId);
   }
@@ -53,8 +53,8 @@ class SessionServiceClass {
   async findById(id: string): Promise<ApiResponse<Session>> {
     const { data, error } = await supabase
       .from(this.tableName)
-      .select("*")
-      .eq("id", id)
+      .select('*')
+      .eq('id', id)
       .single();
 
     if (error) {
@@ -67,9 +67,9 @@ class SessionServiceClass {
   async findActiveByBand(bandId: string): Promise<ApiResponse<Session | null>> {
     const { data, error } = await supabase
       .from(this.tableName)
-      .select("*")
-      .eq("band_id", bandId)
-      .eq("status", "active")
+      .select('*')
+      .eq('band_id', bandId)
+      .eq('status', 'active')
       .maybeSingle();
 
     if (error) {
@@ -85,14 +85,14 @@ class SessionServiceClass {
     if (existing.success && existing.data) {
       return {
         success: false,
-        message: "An active session already exists for this band",
+        message: 'An active session already exists for this band',
       };
     }
 
     const sessionData = {
       ...payload,
       current_song_position: payload.current_song_position || 0,
-      status: "active" as const,
+      status: 'active' as const,
     };
 
     const { data, error } = await supabase
@@ -110,12 +110,12 @@ class SessionServiceClass {
 
   async update(
     id: string,
-    payload: SessionUpdate
+    payload: SessionUpdate,
   ): Promise<ApiResponse<Session>> {
     const { data, error } = await supabase
       .from(this.tableName)
       .update(payload as any)
-      .eq("id", id)
+      .eq('id', id)
       .select()
       .single();
 
@@ -130,7 +130,7 @@ class SessionServiceClass {
     const { data, error } = await supabase
       .from(this.tableName)
       .delete()
-      .eq("id", id)
+      .eq('id', id)
       .select()
       .single();
 
@@ -142,17 +142,17 @@ class SessionServiceClass {
   }
 
   async pauseSession(id: string): Promise<ApiResponse<Session>> {
-    return this.update(id, { status: "paused" });
+    return this.update(id, { status: 'paused' });
   }
 
   async resumeSession(id: string): Promise<ApiResponse<Session>> {
-    return this.update(id, { status: "active" });
+    return this.update(id, { status: 'active' });
   }
 
   async changeSong(
     id: string,
     songId: string | null,
-    position: number
+    position: number,
   ): Promise<ApiResponse<Session>> {
     return this.update(id, {
       current_song_id: songId,
@@ -162,15 +162,15 @@ class SessionServiceClass {
 
   async getSetSongs(setId: string): Promise<ApiResponse<SetSongWithDetails[]>> {
     const { data, error } = await supabase
-      .from("set_songs")
+      .from('set_songs')
       .select(
         `
 				*,
 				song:songs (*)
-			`
+			`,
       )
-      .eq("set_id", setId)
-      .order("position", { ascending: true });
+      .eq('set_id', setId)
+      .order('position', { ascending: true });
 
     if (error) {
       return { success: false, message: error.message };
@@ -180,27 +180,27 @@ class SessionServiceClass {
   }
 
   async nextSong(
-    id: string
+    id: string,
   ): Promise<ApiResponse<Session & { nextSong?: SongChangedPayload }>> {
     const session = await this.findById(id);
     if (!session.success || !session.data) {
-      return { success: false, message: "Session not found" };
+      return { success: false, message: 'Session not found' };
     }
 
     if (!session.data.set_id) {
-      return { success: false, message: "No set assigned to session" };
+      return { success: false, message: 'No set assigned to session' };
     }
 
     const songs = await this.getSetSongs(session.data.set_id);
     if (!songs.success || !songs.data) {
-      return { success: false, message: "Failed to get set songs" };
+      return { success: false, message: 'Failed to get set songs' };
     }
 
     const nextPosition = session.data.current_song_position + 1;
     const nextSong = songs.data.find((s) => s.position === nextPosition);
 
     if (!nextSong) {
-      return { success: false, message: "No more songs in set" };
+      return { success: false, message: 'No more songs in set' };
     }
 
     const updated = await this.changeSong(id, nextSong.song_id, nextPosition);
@@ -222,31 +222,31 @@ class SessionServiceClass {
   }
 
   async previousSong(
-    id: string
+    id: string,
   ): Promise<ApiResponse<Session & { previousSong?: SongChangedPayload }>> {
     const session = await this.findById(id);
     if (!session.success || !session.data) {
-      return { success: false, message: "Session not found" };
+      return { success: false, message: 'Session not found' };
     }
 
     if (!session.data.set_id) {
-      return { success: false, message: "No set assigned to session" };
+      return { success: false, message: 'No set assigned to session' };
     }
 
     const prevPosition = session.data.current_song_position - 1;
     if (prevPosition < 0) {
-      return { success: false, message: "Already at the first song" };
+      return { success: false, message: 'Already at the first song' };
     }
 
     const songs = await this.getSetSongs(session.data.set_id);
     if (!songs.success || !songs.data) {
-      return { success: false, message: "Failed to get set songs" };
+      return { success: false, message: 'Failed to get set songs' };
     }
 
     const prevSong = songs.data.find((s) => s.position === prevPosition);
 
     if (!prevSong) {
-      return { success: false, message: "Previous song not found" };
+      return { success: false, message: 'Previous song not found' };
     }
 
     const updated = await this.changeSong(id, prevSong.song_id, prevPosition);
@@ -269,11 +269,11 @@ class SessionServiceClass {
 
   // Helper to create WebSocket events
   createEvent<T>(
-    type: SessionEvent<T>["type"],
+    type: SessionEvent<T>['type'],
     sessionId: string,
     bandId: string,
     payload: T,
-    triggeredBy: string
+    triggeredBy: string,
   ): SessionEvent<T> {
     return {
       type,

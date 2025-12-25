@@ -1,5 +1,5 @@
-import { IsString, IsOptional, IsInt, Min, Max, IsUUID } from "class-validator";
-import { BaseEntity } from "@/types";
+import { IsString, IsOptional, IsInt, Min, Max, IsUUID } from 'class-validator';
+import { BaseEntity } from '@/types';
 
 // ============ ENTITY ============
 export interface Song extends BaseEntity {
@@ -13,8 +13,8 @@ export interface Song extends BaseEntity {
   owner_id: string;
 }
 
-export type SongInsert = Omit<Song, "id" | "created_at" | "updated_at">;
-export type SongUpdate = Partial<Omit<SongInsert, "owner_id">>;
+export type SongInsert = Omit<Song, 'id' | 'created_at' | 'updated_at'>;
+export type SongUpdate = Partial<Omit<SongInsert, 'owner_id'>>;
 
 // ============ DTOs ============
 export class CreateSongDto implements SongInsert {
