@@ -14,10 +14,14 @@ export interface Gig extends BaseEntity {
   set_id: string | null;
   status: GigStatus;
   created_by: string;
+  price: number | null;
+  bands?: {
+    name: string;
+  };
 }
 
-export type CreateGigRequest = Omit<Gig, "id" | "created_at" | "updated_at">;
-export type UpdateGigRequest = Partial<Omit<CreateGigRequest, "band_id" | "created_by">>;
+export type CreateGigRequest = Omit<Gig, "id" | "created_at" | "updated_at" | "created_by">;
+export type UpdateGigRequest = Partial<Omit<CreateGigRequest, "band_id">>;
 
 export interface GigStatusUpdateRequest {
   status: GigStatus;

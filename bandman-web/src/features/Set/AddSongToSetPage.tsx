@@ -103,7 +103,7 @@ export default function AddSongToSetPage() {
 						>
 							<div className="flex-1 min-w-0">
 								<p className="text-white font-medium truncate">{song.title}</p>
-								<div className="flex items-center gap-3 text-sm text-zinc-500 mt-1">
+								<div className="flex flex-wrap items-center gap-3 text-sm text-zinc-500 mt-1">
 									{song.artist && <span>{song.artist}</span>}
 									{song.key && <span>Key: {song.key}</span>}
 								</div>

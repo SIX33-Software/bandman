@@ -21,6 +21,8 @@ const SetFormPage = lazy(() => import("./features/Set/SetFormPage.tsx"));
 const SetDetailsPage = lazy(() => import("./features/Set/SetDetailsPage.tsx"));
 const AddSongToSetPage = lazy(() => import("./features/Set/AddSongToSetPage.tsx"));
 const LiveSessionPage = lazy(() => import("./features/Session/LiveSessionPage.tsx"));
+const GigFormPage = lazy(() => import("./features/Gig/GigFormPage.tsx"));
+const GigDetailsPage = lazy(() => import("./features/Gig/GigDetailsPage.tsx"));
 
 export const LoadingFallback = () => (
 	<div className="min-h-dvh w-full flex items-center justify-center">
@@ -48,6 +50,7 @@ createRoot(document.getElementById("root")!).render(
 									<Route index element={<HomePage />} />
 									<Route path="bands/new" element={<CreateBandPage />} />
 									<Route path="/bands/:id" element={<BandDetailsPage />} />
+									<Route path="/bands/:id/edit" element={<CreateBandPage />} />
 									<Route path="/bands/:id/members/add" element={<AddMemberPage />} />
 									<Route path="/bands/:id/songs/add" element={<AddSongToBandPage />} />
 									<Route path="/bands/:id/songs/create" element={<CreateSongPage />} />
@@ -59,6 +62,11 @@ createRoot(document.getElementById("root")!).render(
 									<Route path="/bands/:bandId/sets/:id" element={<SetDetailsPage />} />
 									<Route path="/bands/:bandId/sets/:id/edit" element={<SetFormPage />} />
 									<Route path="/bands/:bandId/sets/:id/songs/add" element={<AddSongToSetPage />} />
+
+									{/* Gig Routes */}
+									<Route path="/bands/:bandId/gigs/create" element={<GigFormPage />} />
+									<Route path="/bands/:bandId/gigs/:id" element={<GigDetailsPage />} />
+									<Route path="/bands/:bandId/gigs/:id/edit" element={<GigFormPage />} />
 
 									<Route path="/songs/:id" element={<SongViewPage />} />
 									<Route path="/songs/:id/edit" element={<EditSongPage />} />

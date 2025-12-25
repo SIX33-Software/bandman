@@ -10,16 +10,26 @@ import {
 	QueryParam,
 	HttpCode,
 	JsonController,
+	UseBefore,
+	CurrentUser,
 } from "routing-controllers";
 import { GigService } from "../services";
 import { CreateGigDto, UpdateGigDto, GigStatus } from "../types";
 import { PaginationDto } from "@/common/dto";
+import { AuthMiddleware } from "@/features/Auth/middlewares";
+import { AuthUser } from "@/features/Auth/types";
 
 @JsonController("/gigs")
 export class GigController {
 	@Get("/")
 	async getAll(@QueryParams() query: PaginationDto) {
 		return GigService.findAll(query);
+	}
+
+	@Get("/upcoming")
+	@UseBefore(AuthMiddleware)
+	async getUpcomingForUser(@CurrentUser({ required: true }) user: AuthUser, @QueryParams() query: PaginationDto) {
+		return GigService.findUpcomingForUser(user.id, query);
 	}
 
 	@Get("/band/:bandId")
@@ -42,9 +52,10 @@ export class GigController {
 	}
 
 	@Post("/")
+	@UseBefore(AuthMiddleware)
 	@HttpCode(201)
-	async create(@Body() body: CreateGigDto) {
-		return GigService.create(body);
+	async create(@Body() body: CreateGigDto, @CurrentUser({ required: true }) user: AuthUser) {
+		return GigService.create({ ...body, created_by: user.id });
 	}
 
 	@Put("/:id")

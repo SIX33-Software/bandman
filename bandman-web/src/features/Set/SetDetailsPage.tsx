@@ -129,7 +129,7 @@ const SetSongItem = ({
 						</div>
 					)}
 
-					<div className="flex items-center gap-3 text-sm text-zinc-500 mt-1">
+					<div className="flex flex-wrap items-center gap-3 text-sm text-zinc-500 mt-1">
 						{setSong.song?.artist && <span>{setSong.song.artist}</span>}
 						{setSong.song?.key && <span>Key: {setSong.song.key}</span>}
 						{setSong.song?.duration_seconds && <span>{formatDuration(setSong.song.duration_seconds)}</span>}
@@ -137,7 +137,7 @@ const SetSongItem = ({
 				</div>
 			</div>
 
-			<div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+			<div className="flex items-center gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
 				<button
 					onClick={() => onRemove(setSong.song_id)}
 					disabled={isRemoving}
@@ -257,7 +257,7 @@ export default function SetDetailsPage() {
 
 	if (!set) {
 		return (
-			<div className="max-w-4xl mx-auto px-6 py-12 text-center">
+			<div className="max-w-4xl mx-auto py-12 text-center">
 				<h1 className="text-2xl font-bold mb-4">Set not found</h1>
 				<Link to={`/bands/${bandId}?tab=sets`}>
 					<Button variant="secondary">Back to Band</Button>
@@ -267,7 +267,7 @@ export default function SetDetailsPage() {
 	}
 
 	return (
-		<main className="max-w-4xl mx-auto px-6 py-8">
+		<main className="max-w-4xl pb-20 mx-auto">
 			<Link
 				to={`/bands/${bandId}?tab=sets`}
 				className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-8"
@@ -277,8 +277,8 @@ export default function SetDetailsPage() {
 			</Link>
 
 			{/* Set Header */}
-			<div className="flex items-start justify-between gap-4 mb-8">
-				<div>
+			<div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-8">
+				<div className="w-full sm:w-auto">
 					<h1 className="text-3xl font-bold text-white mb-2">{set.name}</h1>
 					{set.description && <p className="text-zinc-400">{set.description}</p>}
 					<div className="flex items-center gap-4 mt-4 text-sm text-zinc-500">
@@ -288,7 +288,7 @@ export default function SetDetailsPage() {
 					</div>
 				</div>
 
-				<div className="flex items-center gap-2">
+				<div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
 					<Button
 						variant="primary"
 						size="sm"

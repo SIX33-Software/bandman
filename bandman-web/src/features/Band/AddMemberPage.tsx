@@ -116,7 +116,7 @@ export const AddMemberPage = () => {
 		return (
 			<div className="min-h-screen bg-zinc-950 text-white">
 				<Header />
-				<main className="max-w-2xl mx-auto px-6 py-12">
+				<main className="max-w-2xl mx-auto py-12">
 					<div className="text-center">
 						<h1 className="text-2xl font-bold mb-4">Band not found</h1>
 						<Link to="/">
@@ -129,7 +129,7 @@ export const AddMemberPage = () => {
 	}
 
 	return (
-		<main className="max-w-2xl mx-auto px-6 py-8">
+		<main className="max-w-2xl mx-auto py-8">
 			{/* Back link */}
 			<Link
 				to={`/bands/${bandId}`}
@@ -155,12 +155,12 @@ export const AddMemberPage = () => {
 						<div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4">
 							<div className="flex items-center justify-between">
 								<div className="flex items-center gap-3">
-									<div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center text-lg font-medium text-zinc-300">
+									<div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center text-lg font-medium text-zinc-300 shrink-0">
 										{selectedUser.name?.[0]?.toUpperCase() || selectedUser.email?.[0]?.toUpperCase() || "?"}
 									</div>
-									<div>
-										<p className="text-white font-medium">{selectedUser.name || "Unknown User"}</p>
-										<p className="text-zinc-500 text-sm">{selectedUser.email}</p>
+									<div className="min-w-0 flex-1">
+										<p className="text-white font-medium truncate">{selectedUser.name || "Unknown User"}</p>
+										<p className="text-zinc-500 text-sm truncate">{selectedUser.email}</p>
 									</div>
 								</div>
 								<button

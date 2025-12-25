@@ -88,6 +88,69 @@ class GigServiceClass extends BaseService<Gig, GigInsert, GigUpdate> {
     };
   }
 
+  async findUpcomingForUser(
+    userId: string,
+    params: PaginationParams = {}
+  ): Promise<PaginatedResponse<Gig & { bands: { name: string } }>> {
+    const { page = 1, limit = 20 } = params;
+    const offset = (page - 1) * limit;
+    const today = new Date().toISOString().split("T")[0];
+
+    // 1. Get user's bands
+    const { data: bandMembers, error: memberError } = await supabase
+      .from("band_members")
+      .select("band_id")
+      .eq("user_id", userId);
+
+    if (memberError) {
+      return {
+        success: false,
+        message: memberError.message,
+        pagination: { page, limit, total: 0, totalPages: 0 },
+      };
+    }
+
+    const bandIds = bandMembers?.map((bm) => bm.band_id) || [];
+
+    if (bandIds.length === 0) {
+      return {
+        success: true,
+        data: [],
+        pagination: { page, limit, total: 0, totalPages: 0 },
+      };
+    }
+
+    // 2. Get gigs for those bands
+    const { data, error, count } = await supabase
+      .from(this.tableName)
+      .select("*, bands(name)", { count: "exact" })
+      .in("band_id", bandIds)
+      .eq("status", "scheduled")
+      .gte("date", today)
+      .range(offset, offset + limit - 1)
+      .order("date", { ascending: true });
+
+    if (error) {
+      return {
+        success: false,
+        message: error.message,
+        pagination: { page, limit, total: 0, totalPages: 0 },
+      };
+    }
+
+    const total = count || 0;
+    return {
+      success: true,
+      data: data as (Gig & { bands: { name: string } })[],
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
   async updateStatus(id: string, status: GigStatus): Promise<ApiResponse<Gig>> {
     return this.update(id, { status });
   }

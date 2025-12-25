@@ -8,7 +8,7 @@ interface AnimatedBackgroundLinesProps {
 
 export const AnimatedBackgroundLines = ({
 	className = "",
-	lineColor = "rgba(255, 140, 60, 0.1)",
+	lineColor = "rgba(255, 255, 255, 0.1)",
 	lineCount = 20,
 }: AnimatedBackgroundLinesProps) => {
 	// Generate an array of indices for the lines
@@ -28,20 +28,26 @@ export const AnimatedBackgroundLines = ({
 				preserveAspectRatio="none"
 				xmlns="http://www.w3.org/2000/svg"
 			>
+				<defs>
+					<linearGradient id="line-gradient" x1="0" y1="0" x2="0" y2="1">
+						<stop offset="0%" stopColor={lineColor} stopOpacity="1" />
+						<stop offset="100%" stopColor={lineColor} stopOpacity="0" />
+					</linearGradient>
+				</defs>
 				{lines.map((i) => (
 					<motion.line
 						key={i}
 						// Start points (slanted)
-						x1={-50 + (i * 200) / lineCount}
-						y1={-90 + (i * 60) / lineCount}
-						x2={-50 + (i * 200) / lineCount - 50}
-						y2={0 + Math.pow(i, 2.5) / lineCount}
-						stroke={lineColor}
+						x1={50 + (i * 200) / lineCount}
+						y1={-40 + (i * 5) / lineCount}
+						x2={50 + (i * 200) / lineCount - 50}
+						y2={0 + (i * 200) / lineCount}
+						stroke="url(#line-gradient)"
 						animate={{
 							strokeWidth: [1, 10, 1],
 						}}
 						transition={{
-							duration: i * 0.5 + 1,
+							duration: i * 0.5 + 2,
 							repeat: Infinity,
 							ease: "easeInOut",
 							delay: i * 0.1,

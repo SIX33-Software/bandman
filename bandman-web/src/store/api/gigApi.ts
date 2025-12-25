@@ -35,6 +35,21 @@ export const gigApi = baseApi.injectEndpoints({
           : [{ type: "Gig", id: "LIST" }],
     }),
 
+    // Get upcoming gigs for user
+    getUpcomingGigsForUser: builder.query<PaginatedResponse<Gig>, PaginationParams | void>({
+      query: (params) => ({
+        url: "/gigs/upcoming",
+        params: params || {},
+      }),
+      providesTags: (result) =>
+        result?.data
+          ? [
+              ...result.data.map(({ id }) => ({ type: "Gig" as const, id })),
+              { type: "Gig", id: "UPCOMING_USER" },
+            ]
+          : [{ type: "Gig", id: "UPCOMING_USER" }],
+    }),
+
     // Get gigs by band with optional status filter
     getGigsByBand: builder.query<PaginatedResponse<Gig>, GigsByBandParams>({
       query: ({ bandId, status, page, limit }) => ({
@@ -141,6 +156,8 @@ export const {
   useLazyGetGigsByBandQuery,
   useGetUpcomingGigsQuery,
   useLazyGetUpcomingGigsQuery,
+  useGetUpcomingGigsForUserQuery,
+  useLazyGetUpcomingGigsForUserQuery,
   useGetGigByIdQuery,
   useLazyGetGigByIdQuery,
   useCreateGigMutation,

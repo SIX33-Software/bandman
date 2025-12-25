@@ -1,21 +1,39 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router";
 import { ArrowLeft } from "@mynaui/icons-react";
 import { InputField } from "@/components/ui/InputField";
 import { TextArea } from "@/components/ui/TextArea";
 import { Button } from "@/components/ui/Button";
-import { useCreateBandMutation } from "@/store/api/bandApi";
+import { useCreateBandMutation, useGetBandByIdQuery, useUpdateBandMutation } from "@/store/api/bandApi";
 import { useAuth } from "@/hooks";
 
 export default function CreateBandPage() {
 	const navigate = useNavigate();
+	const { id } = useParams<{ id: string }>();
+	const isEditing = !!id;
 	const { user } = useAuth();
-	const [createBand, { isLoading }] = useCreateBandMutation();
+
+	const [createBand, { isLoading: isCreating }] = useCreateBandMutation();
+	const [updateBand, { isLoading: isUpdating }] = useUpdateBandMutation();
+
+	const { data: bandData, isLoading: isBandLoading } = useGetBandByIdQuery(id!, {
+		skip: !isEditing,
+	});
 
 	const [name, setName] = useState("");
 	const [description, setDescription] = useState("");
 	const [imageUrl, setImageUrl] = useState("");
 	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		if (bandData?.data) {
+			setName(bandData.data.name);
+			setDescription(bandData.data.description || "");
+			setImageUrl(bandData.data.image_url || "");
+		}
+	}, [bandData]);
+
+	const isLoading = isCreating || isUpdating || isBandLoading;
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -32,32 +50,62 @@ export default function CreateBandPage() {
 		}
 
 		try {
-			const result = await createBand({
-				name: name.trim(),
-				description: description.trim() || null,
-				image_url: imageUrl.trim() || null,
-			}).unwrap();
+			if (isEditing) {
+				const result = await updateBand({
+					id: id!,
+					data: {
+						name: name.trim(),
+						description: description.trim() || null,
+						image_url: imageUrl.trim() || null,
+					},
+				}).unwrap();
 
-			if (result.success && result.data) {
-				navigate(`/bands/${result.data.id}`);
+				if (result.success) {
+					navigate(`/bands/${id}`);
+				} else {
+					setError(result.message || "Failed to update band");
+				}
 			} else {
-				setError(result.message || "Failed to create band");
+				const result = await createBand({
+					name: name.trim(),
+					description: description.trim() || null,
+					image_url: imageUrl.trim() || null,
+				}).unwrap();
+
+				if (result.success && result.data) {
+					navigate(`/bands/${result.data.id}`);
+				} else {
+					setError(result.message || "Failed to create band");
+				}
 			}
 		} catch (_err) {
-			setError("Failed to create band. Please try again.");
+			setError(`Failed to ${isEditing ? "update" : "create"} band. Please try again.`);
 		}
 	};
 
+	if (isBandLoading) {
+		return (
+			<div className="min-h-screen flex items-center justify-center">
+				<div className="w-8 h-8 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+			</div>
+		);
+	}
+
 	return (
 		<div className="max-w-xl mx-auto">
-			<Link to="/" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-8">
+			<Link
+				to={isEditing ? `/bands/${id}` : "/"}
+				className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-8"
+			>
 				<ArrowLeft className="w-5 h-5" />
-				Back to bands
+				Back to {isEditing ? "band" : "bands"}
 			</Link>
 
 			<div className="mb-8">
-				<h1 className="text-3xl font-heading font-bold mb-2">Create a Band</h1>
-				<p className="text-zinc-400">Set up your band and start managing your music</p>
+				<h1 className="text-3xl font-heading font-bold mb-2">{isEditing ? "Edit Band" : "Create a Band"}</h1>
+				<p className="text-zinc-400">
+					{isEditing ? "Update your band details" : "Set up your band and start managing your music"}
+				</p>
 			</div>
 
 			<form onSubmit={handleSubmit} className="space-y-6">
@@ -94,10 +142,15 @@ export default function CreateBandPage() {
 				/>
 
 				<div className="flex items-center gap-4 pt-4">
-					<Button type="submit" isLoading={isLoading} loadingText="Creating..." className="flex-1">
-						Create Band
+					<Button
+						type="submit"
+						isLoading={isLoading}
+						loadingText={isEditing ? "Updating..." : "Creating..."}
+						className="flex-1"
+					>
+						{isEditing ? "Update Band" : "Create Band"}
 					</Button>
-					<Button variant="secondary" type="button" onClick={() => navigate("/")}>
+					<Button variant="secondary" type="button" onClick={() => navigate(isEditing ? `/bands/${id}` : "/")}>
 						Cancel
 					</Button>
 				</div>
