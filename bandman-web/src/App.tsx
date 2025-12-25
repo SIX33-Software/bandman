@@ -6,7 +6,7 @@ function App() {
 	return (
 		<div className="min-h-dvh w-full h-fit flex flex-col">
 			<Header />
-			<div className="p-5 md:p-8 pt-20 w-full h-fit overflow-hidden">
+			<div className="p-5 md:p-8 pb-0 pt-20 w-full h-fit overflow-hidden">
 				<Outlet />
 			</div>
 			<Footer />

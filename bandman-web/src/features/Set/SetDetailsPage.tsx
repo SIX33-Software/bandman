@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { Reorder, useDragControls } from "framer-motion";
 import { ArrowLeft, EditOne, Delete, Plus, Check, X, MenuSolid, Play } from "@mynaui/icons-react";
@@ -14,6 +14,7 @@ import {
 } from "@/store/api/setApi";
 import { useGetActiveSessionByBandQuery, useCreateSessionMutation } from "@/store/api/sessionApi";
 import type { SetSong } from "@/types";
+import dayjs from "dayjs";
 
 const SetSongItem = ({
 	setSong,
@@ -174,6 +175,7 @@ export default function SetDetailsPage() {
 	const songs = songsData?.data;
 
 	const [localSongs, setLocalSongs] = useState<SetSong[]>([]);
+	const localSongsRef = useRef(localSongs);
 
 	useEffect(() => {
 		if (songs) {
@@ -181,14 +183,18 @@ export default function SetDetailsPage() {
 		}
 	}, [songs]);
 
+	useEffect(() => {
+		localSongsRef.current = localSongs;
+	}, [localSongs]);
+
 	const handleReorder = (newOrder: SetSong[]) => {
 		setLocalSongs(newOrder);
 	};
 
 	const handleDragEnd = async () => {
-		if (!setId || localSongs.length === 0) return;
+		if (!setId || localSongsRef.current.length === 0) return;
 
-		const reorderedSongs = localSongs.map((s, index) => ({
+		const reorderedSongs = localSongsRef.current.map((s, index) => ({
 			song_id: s.song_id,
 			position: index,
 		}));
@@ -284,7 +290,7 @@ export default function SetDetailsPage() {
 					<div className="flex items-center gap-4 mt-4 text-sm text-zinc-500">
 						<span>{localSongs.length} songs</span>
 						<span>•</span>
-						<span>Created {new Date(set.created_at).toLocaleDateString()}</span>
+						<span>Created {dayjs(set.created_at).format("MMM D, YYYY")}</span>
 					</div>
 				</div>
 

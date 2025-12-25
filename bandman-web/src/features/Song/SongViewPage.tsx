@@ -134,39 +134,37 @@ export const SongViewPage = () => {
 			</div>
 
 			{/* Song Info */}
-			<div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 sm:p-6 mb-6">
-				<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-					{song.key && (
-						<div>
-							<p className="text-zinc-500 text-sm">Key</p>
-							<p className="text-white font-medium">{song.key}</p>
-						</div>
-					)}
-					{song.tempo_bpm && (
-						<div>
-							<p className="text-zinc-500 text-sm">Tempo</p>
-							<p className="text-white font-medium">{song.tempo_bpm} BPM</p>
-						</div>
-					)}
-					{song.duration_seconds && (
-						<div>
-							<p className="text-zinc-500 text-sm">Duration</p>
-							<p className="text-white font-medium">{formatDuration(song.duration_seconds)}</p>
-						</div>
-					)}
-					{detectedChords.length > 0 && (
-						<div>
-							<p className="text-zinc-500 text-sm">Chords</p>
-							<p className="text-white font-medium">{detectedChords.length} unique</p>
-						</div>
-					)}
-				</div>
+			<div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+				{song.key && (
+					<div>
+						<p className="text-zinc-500 text-sm mb-1">Key</p>
+						<p className="text-white font-medium">{song.key}</p>
+					</div>
+				)}
+				{song.tempo_bpm && (
+					<div>
+						<p className="text-zinc-500 text-sm mb-1">Tempo</p>
+						<p className="text-white font-medium">{song.tempo_bpm} BPM</p>
+					</div>
+				)}
+				{song.duration_seconds && (
+					<div>
+						<p className="text-zinc-500 text-sm mb-1">Duration</p>
+						<p className="text-white font-medium">{formatDuration(song.duration_seconds)}</p>
+					</div>
+				)}
+				{detectedChords.length > 0 && (
+					<div>
+						<p className="text-zinc-500 text-sm mb-1">Chords</p>
+						<p className="text-white font-medium">{detectedChords.length} unique</p>
+					</div>
+				)}
 			</div>
 
 			{/* Chord Summary */}
 			{detectedChords.length > 0 && (
-				<div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 mb-6">
-					<h2 className="text-lg font-semibold text-white mb-3">Chords Used</h2>
+				<div className="mb-8">
+					<h2 className="text-zinc-500 text-sm mb-2">Chords Used</h2>
 					<div className="flex flex-wrap gap-2">
 						{detectedChords.map((chord) => (
 							<ChordBadge key={chord} chord={chord} />
@@ -174,6 +172,16 @@ export const SongViewPage = () => {
 					</div>
 				</div>
 			)}
+
+			{/* Notes */}
+			{song.notes && (
+				<div className="mb-8">
+					<h2 className="text-yellow-500 text-sm mb-2">Notes</h2>
+					<p className="text-zinc-300 whitespace-pre-wrap">{song.notes}</p>
+				</div>
+			)}
+
+			<div className="border-t border-zinc-800 my-12" />
 
 			{/* Lyrics Display Controls */}
 			{song.lyrics && (
@@ -271,14 +279,6 @@ export const SongViewPage = () => {
 							notation={notation}
 						/>
 					</div>
-				</div>
-			)}
-
-			{/* Notes */}
-			{song.notes && (
-				<div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 mb-6">
-					<h2 className="text-lg font-semibold text-white mb-3">Notes</h2>
-					<p className="text-zinc-300 whitespace-pre-wrap">{song.notes}</p>
 				</div>
 			)}
 

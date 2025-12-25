@@ -119,8 +119,30 @@ class SetServiceClass extends BaseService<Set, SetInsert, SetUpdate> {
     setId: string,
     songs: SongPositionDto[],
   ): Promise<ApiResponse> {
-    // Update all positions in a transaction-like manner
-    const updates = songs.map((song) =>
+    // Use a temporary offset to avoid unique constraint violations on (set_id, position)
+    const TEMP_OFFSET = 1000000;
+
+    // 1. Move to temporary positions
+    const tempUpdates = songs.map((song) =>
+      supabase
+        .from('set_songs')
+        .update({ position: song.position + TEMP_OFFSET } as any)
+        .eq('set_id', setId)
+        .eq('song_id', song.song_id),
+    );
+
+    const tempResults = await Promise.all(tempUpdates);
+    const tempError = tempResults.find((r) => r.error);
+
+    if (tempError) {
+      return {
+        success: false,
+        message: `Failed to reorder songs (step 1): ${tempError.error?.message}`,
+      };
+    }
+
+    // 2. Move to final positions
+    const finalUpdates = songs.map((song) =>
       supabase
         .from('set_songs')
         .update({ position: song.position } as any)
@@ -128,11 +150,14 @@ class SetServiceClass extends BaseService<Set, SetInsert, SetUpdate> {
         .eq('song_id', song.song_id),
     );
 
-    const results = await Promise.all(updates);
-    const hasError = results.some((r) => r.error);
+    const finalResults = await Promise.all(finalUpdates);
+    const finalError = finalResults.find((r) => r.error);
 
-    if (hasError) {
-      return { success: false, message: 'Failed to reorder songs' };
+    if (finalError) {
+      return {
+        success: false,
+        message: `Failed to reorder songs (step 2): ${finalError.error?.message}`,
+      };
     }
 
     return { success: true, message: 'Songs reordered successfully' };

@@ -11,115 +11,66 @@ interface ChordLyricsProps {
 	notation?: NotationSystem;
 }
 
+interface ChordPosition {
+	chord: string;
+	position: number; // character position in the lyrics line
+}
+
 interface ParsedLine {
-	type: "lyrics" | "chords-only";
-	segments: Array<{
-		text: string;
-		chord?: string;
-	}>;
+	lyrics: string;
+	chords: ChordPosition[];
+	hasChords: boolean;
 }
 
-type RenderRow =
-	| { kind: "single"; line: ParsedLine }
-	| { kind: "chords-above"; chordsLine: string; lyricsLine: string };
-
-const CHORD_CORE = "[A-GH]([#b])?(?:m|maj|min|dim|aug|sus[24]?|add[0-9]+|[0-9]+)?(?:\\/[A-GH][#b]?)?";
-
-const INLINE_CHORD_REGEX = new RegExp(`[{[](${CHORD_CORE})[}\\]]`, "gi");
-const CHORD_TOKEN_REGEX = new RegExp(CHORD_CORE, "gi");
-
-function parseChordOnlySegments(line: string): Array<{ text: string; isChord: boolean }> {
-	const segments: Array<{ text: string; isChord: boolean }> = [];
-	let lastIndex = 0;
-	let match: RegExpExecArray | null;
-
-	while ((match = CHORD_TOKEN_REGEX.exec(line)) !== null) {
-		const before = line.slice(lastIndex, match.index);
-		if (before) segments.push({ text: before, isChord: false });
-		segments.push({ text: match[0], isChord: true });
-		lastIndex = match.index + match[0].length;
-	}
-
-	const remaining = line.slice(lastIndex);
-	if (remaining) segments.push({ text: remaining, isChord: false });
-
-	return segments.length ? segments : [{ text: line, isChord: false }];
-}
-
-function isChordLine(line: string): boolean {
-	CHORD_TOKEN_REGEX.lastIndex = 0;
-	const hasAnyChord = CHORD_TOKEN_REGEX.test(line);
-	if (!hasAnyChord) return false;
-
-	// If we remove chords, what's left should only be spacing/separators.
-	const leftover = line
-		.replace(CHORD_TOKEN_REGEX, "")
-		.replace(/[\s|.-]/g, "")
-		.trim();
-	return leftover.length === 0;
-}
+// Regex to match chords in brackets: {Am}, [G], {F#m7}, etc.
+const CHORD_REGEX = /[{[]([A-GH][#b]?(?:m|maj|min|dim|aug|sus[24]?|add[0-9]+|[0-9]+)?(?:\/[A-GH][#b]?)?)[}\]]/gi;
 
 /**
- * Parses lyrics with chord syntax: {Chord}lyrics or [Chord]lyrics
- * Example: "{Am}Hello {G}world" or "[Am]Hello [G]world"
+ * Parses a line with inline chord syntax: {Chord} or [Chord]
+ * Returns the clean lyrics text and chord positions
  *
- * Supports both curly braces {} and square brackets []
+ * Example: "{Am}Hello {G}world" -> lyrics: "Hello world", chords: [{chord: "Am", position: 0}, {chord: "G", position: 6}]
  */
-function parseChordLine(line: string): ParsedLine {
-	// Match both {Chord} and [Chord] syntax
-	const chordRegex = INLINE_CHORD_REGEX;
-	chordRegex.lastIndex = 0;
-
-	const segments: ParsedLine["segments"] = [];
+function parseLine(line: string): ParsedLine {
+	const chords: ChordPosition[] = [];
+	let lyrics = "";
 	let lastIndex = 0;
-	let hasLyrics = false;
 	let match: RegExpExecArray | null;
 
-	while ((match = chordRegex.exec(line)) !== null) {
-		// Text before the chord (if any)
-		const textBefore = line.slice(lastIndex, match.index);
-		if (textBefore) {
-			// Check if previous segment has a chord waiting for lyrics
-			if (segments.length > 0 && segments[segments.length - 1].chord && !segments[segments.length - 1].text) {
-				segments[segments.length - 1].text = textBefore;
-				hasLyrics = hasLyrics || textBefore.trim().length > 0;
-			} else {
-				segments.push({ text: textBefore });
-				hasLyrics = hasLyrics || textBefore.trim().length > 0;
-			}
-		}
+	CHORD_REGEX.lastIndex = 0;
 
-		// Add the chord (it will grab the following text)
-		segments.push({ text: "", chord: match[1] });
+	while ((match = CHORD_REGEX.exec(line)) !== null) {
+		// Add text before the chord to lyrics
+		const textBefore = line.slice(lastIndex, match.index);
+		lyrics += textBefore;
+
+		// Record chord at current position in the clean lyrics
+		chords.push({
+			chord: match[1],
+			position: lyrics.length,
+		});
+
 		lastIndex = match.index + match[0].length;
 	}
 
-	// Remaining text after last chord
-	const remaining = line.slice(lastIndex);
-	if (remaining) {
-		if (segments.length > 0 && segments[segments.length - 1].chord && !segments[segments.length - 1].text) {
-			segments[segments.length - 1].text = remaining;
-			hasLyrics = hasLyrics || remaining.trim().length > 0;
-		} else {
-			segments.push({ text: remaining });
-			hasLyrics = hasLyrics || remaining.trim().length > 0;
-		}
-	}
+	// Add remaining text after last chord
+	lyrics += line.slice(lastIndex);
 
-	// If no segments were created, just return the line as text
-	if (segments.length === 0) {
-		return { type: "lyrics", segments: [{ text: line }] };
-	}
-
-	// Determine if this is a chord-only line or has lyrics
-	const type = hasLyrics ? "lyrics" : "chords-only";
-
-	return { type, segments };
+	return {
+		lyrics,
+		chords,
+		hasChords: chords.length > 0,
+	};
 }
 
 /**
- * ChordLyrics component displays lyrics with highlighted chords.
+ * ChordLyrics component displays lyrics with chords positioned above.
  * Use chord syntax: {Am}lyrics or [G]lyrics
+ *
+ * The chord will appear directly above the character that follows it.
+ * Example: "{Am}Hello {G}world" renders as:
+ *   Am    G
+ *   Hello world
  */
 export const ChordLyrics = ({
 	content,
@@ -129,87 +80,58 @@ export const ChordLyrics = ({
 	transpose = 0,
 	notation = "standard",
 }: ChordLyricsProps) => {
-	const rows = useMemo<RenderRow[]>(() => {
+	const lines = useMemo<ParsedLine[]>(() => {
 		if (!content) return [];
-		const rawLines = content.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
-		const nextRows: RenderRow[] = [];
-
-		for (let index = 0; index < rawLines.length; index++) {
-			const current = rawLines[index] ?? "";
-			const next = rawLines[index + 1];
-
-			if (next !== undefined && isChordLine(current)) {
-				nextRows.push({ kind: "chords-above", chordsLine: current, lyricsLine: next });
-				index++;
-				continue;
-			}
-
-			nextRows.push({ kind: "single", line: parseChordLine(current) });
-		}
-
-		return nextRows;
+		return content.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n").map(parseLine);
 	}, [content]);
 
-	const renderParsedLine = (line: ParsedLine) => {
-		const isBlank = line.segments.every((s) => s.text === "");
-		if (isBlank) {
-			return <span className="text-zinc-300">{"\u00A0"}</span>;
+	const renderLine = (line: ParsedLine, lineIndex: number) => {
+		const isEmptyLine = line.lyrics.trim() === "" && line.chords.length === 0;
+
+		if (isEmptyLine) {
+			return (
+				<div key={lineIndex} className="h-6">
+					{"\u00A0"}
+				</div>
+			);
 		}
 
+		// If no chords or chords are hidden, just render the lyrics
+		if (!line.hasChords || !showChords) {
+			return (
+				<div key={lineIndex} className="text-zinc-300">
+					{line.lyrics || "\u00A0"}
+				</div>
+			);
+		}
+
+		// Render with chords above - using relative positioning
 		return (
-			<>
-				{line.segments.map((segment, segIndex) => (
-					<span key={segIndex} className="inline">
-						{showChords && segment.chord ? (
-							<span className="inline-flex flex-col align-baseline">
-								<span className={classNames("font-bold text-amber-400 leading-none mb-1", chordClassName)}>
-									{transformChord(segment.chord, transpose, notation)}
-								</span>
-								<span className="text-zinc-100 leading-none h-0">{segment.text || "\u200B"}</span>
+			<div key={lineIndex} className="mb-1">
+				{/* Chord line */}
+				<div className="relative h-5 font-mono">
+					{line.chords.map((chordPos, chordIndex) => {
+						const transformedChord = transformChord(chordPos.chord, transpose, notation);
+						return (
+							<span
+								key={chordIndex}
+								className={classNames("absolute font-bold text-amber-400 whitespace-nowrap", chordClassName)}
+								style={{
+									left: `${chordPos.position}ch`,
+								}}
+							>
+								{transformedChord}
 							</span>
-						) : (
-							<span className="text-zinc-300 leading-none">{segment.text}</span>
-						)}
-					</span>
-				))}
-			</>
+						);
+					})}
+				</div>
+				{/* Lyrics line */}
+				<div className="text-zinc-300 font-mono whitespace-pre">{line.lyrics || "\u00A0"}</div>
+			</div>
 		);
 	};
 
-	return (
-		<div className={classNames("whitespace-pre-wrap", className)}>
-			{rows.map((row, rowIndex) => {
-				if (row.kind === "chords-above") {
-					const chordSegments = parseChordOnlySegments(row.chordsLine);
-					const lyricLine = parseChordLine(row.lyricsLine);
-
-					return (
-						<div key={rowIndex}>
-							{showChords && (
-								<div className="font-bold whitespace-pre-wrap leading-none mb-1">
-									{chordSegments.map((seg, segIndex) => (
-										<span
-											key={segIndex}
-											className={classNames(
-												seg.isChord ? "text-amber-400" : "text-zinc-400",
-												seg.isChord ? chordClassName : undefined
-											)}
-										>
-											{seg.isChord ? transformChord(seg.text, transpose, notation) : seg.text}
-										</span>
-									))}
-								</div>
-							)}
-
-							<div>{renderParsedLine(lyricLine)}</div>
-						</div>
-					);
-				}
-
-				return <div key={rowIndex}>{renderParsedLine(row.line)}</div>;
-			})}
-		</div>
-	);
+	return <div className={classNames("font-mono", className)}>{lines.map(renderLine)}</div>;
 };
 
 /**

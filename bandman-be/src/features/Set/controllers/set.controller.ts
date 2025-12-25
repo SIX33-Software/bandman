@@ -68,6 +68,14 @@ export class SetController {
     return SetService.addSong(id, body);
   }
 
+  @Put('/:id/songs/reorder')
+  async reorderSongs(
+    @Param('id') id: string,
+    @Body() body: ReorderSetSongsDto,
+  ) {
+    return SetService.reorderSongs(id, body.songs);
+  }
+
   @Put('/:id/songs/:songId')
   async updateSong(
     @Param('id') id: string,
@@ -75,14 +83,6 @@ export class SetController {
     @Body() body: UpdateSetSongDto,
   ) {
     return SetService.updateSong(id, songId, body);
-  }
-
-  @Put('/:id/songs/reorder')
-  async reorderSongs(
-    @Param('id') id: string,
-    @Body() body: ReorderSetSongsDto,
-  ) {
-    return SetService.reorderSongs(id, body.songs);
   }
 
   @Delete('/:id/songs/:songId')

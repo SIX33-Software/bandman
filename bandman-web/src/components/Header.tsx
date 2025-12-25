@@ -39,31 +39,26 @@ const Header = () => {
 				initial="closed"
 				animate={isMenuOpen ? "open" : "closed"}
 				variants={{
-					closed: {
-						height: "80px",
-						backgroundColor: "rgba(0,0,0,0)",
-						backdropFilter: "blur(0px)",
-					},
-					open: {
-						height: "auto",
-						backgroundColor: "rgba(9, 9, 11, 0.8)",
-						backdropFilter: "blur(12px)",
-					},
+					closed: { height: "80px" },
+					open: { height: "auto" },
 				}}
-				transition={{ duration: 0.3, ease: "easeInOut" }}
+				transition={{ type: "spring", stiffness: 350, damping: 70, mass: 4, restDelta: 0.001, restSpeed: 0.001 }}
 			>
-				{/* Gradient Background (Only visible when closed) */}
+				{/* Backdrop blur overlay (GPU-accelerated opacity transition) */}
 				<motion.div
-					className="absolute inset-0 -z-10 bg-linear-to-b from-zinc-950 to-transparent"
+					className="absolute inset-0 -z-10 bg-zinc-950/90 backdrop-blur-lg will-change-[opacity]"
 					variants={{
-						closed: { opacity: 1 },
-						open: { opacity: 0 },
+						closed: { opacity: 0 },
+						open: { opacity: 1 },
 					}}
-					transition={{ duration: 0.3 }}
+					transition={{ duration: 0.2 }}
 				/>
 
+				{/* Gradient Background (Only visible when closed) */}
+				<motion.div className="absolute top-0 left-0 w-full h-20 -z-10 bg-linear-to-b from-zinc-950 to-transparent will-change-[opacity]" />
+
 				{/* Main Header Bar Content */}
-				<div className="px-8 py-4 h-20 flex items-center justify-between">
+				<div className="px-5 md:px-8 py-4 h-20 flex items-center justify-between">
 					<img
 						onClick={() => navigate("/")}
 						role="button"
@@ -105,7 +100,7 @@ const Header = () => {
 
 				{/* Mobile Menu Content */}
 				<motion.div
-					className="md:hidden px-6 pb-6 flex flex-col gap-6"
+					className="md:hidden px-5 pb-6 flex flex-col gap-6"
 					variants={{
 						closed: { opacity: 0 },
 						open: { opacity: 1, transition: { delay: 0.2 } },

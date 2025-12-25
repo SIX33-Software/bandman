@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { Plus } from "@mynaui/icons-react";
 import { AnimatedBackgroundLines } from "../../components/AnimatedBackgroundLines";
+import dayjs from "dayjs";
 
 import { useAuth } from "@/hooks";
 import type { Band } from "@/types";
@@ -11,13 +12,14 @@ const BandCard = ({ band }: { band: Band }) => {
 	return (
 		<Link
 			to={`/bands/${band.id}`}
-			className="w-full sm:w-96 h-52 border-2 border-zinc-900 relative bg-zinc-900/30 backdrop-blur-2xl overflow-hidden rounded-xl flex flex-col items-start justify-end p-5 gap-1 hover:bg-zinc-900/50 transition-colors cursor-pointer"
+			className="w-full sm:w-96 h-52 border-2 border-zinc-900 relative bg-zinc-900/30 backdrop-blur-xl overflow-hidden rounded-3xl flex flex-col items-start justify-end p-5 gap-1 hover:bg-zinc-900/50 transition-colors cursor-pointer"
 		>
 			{band.image_url && (
 				<img
+					draggable={false}
 					src={band.image_url}
 					alt={band.name}
-					className="absolute w-full h-full top-0 left-0 object-cover -z-1 mask-b-from-0% opacity-50 mask-t-from-0%"
+					className="absolute select-none w-full h-full top-0 left-0 object-cover -z-1 mask-b-from-0% opacity-80 mask-t-from-0%"
 				/>
 			)}
 
@@ -38,7 +40,7 @@ const CreateBandCard = () => {
 	return (
 		<Link
 			to="/bands/new"
-			className="w-full sm:w-96 h-52 bg-zinc-900/30 backdrop-blur-2xl rounded-xl flex flex-col items-center justify-center gap-3 hover:bg-zinc-900/50 transition-colors cursor-pointer border-2 border-dashed border-zinc-800 hover:border-zinc-600"
+			className="w-full sm:w-96 h-52 bg-zinc-900/30 backdrop-blur-lg rounded-3xl flex flex-col items-center justify-center gap-3 hover:bg-zinc-900/50 transition-colors cursor-pointer border-2 border-dashed border-zinc-800 hover:border-zinc-600"
 		>
 			<div className="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center">
 				<Plus className="w-6 h-6 text-zinc-400" />
@@ -94,8 +96,8 @@ const UpcomingGigs = () => {
 	if (gigs.length === 0) return null;
 
 	return (
-		<div className="w-full max-w-6xl mt-12">
-			<h2 className="text-xl font-bold text-white mb-4">Upcoming Gigs</h2>
+		<div className="w-full max-w-6xl mt-16">
+			<h2 className="text-2xl font-heading text-white tracking-wide mb-8">Upcoming Gigs</h2>
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				{gigs.map((gig) => (
 					<Link
@@ -115,7 +117,13 @@ const UpcomingGigs = () => {
 							</div>
 						</div>
 						<div className="text-zinc-500 text-sm mt-auto pt-2 border-t border-zinc-800/50 flex items-center gap-2">
-							<span>{new Date(gig.date).toLocaleDateString()}</span>
+							<span>{dayjs(gig.date).format("ddd D MMM, YYYY")}</span>
+							{gig.start_time && (
+								<>
+									<span>•</span>
+									<span>{dayjs(dayjs(gig.date).format("YYYY-MM-DD") + " " + gig.start_time).format("HH:mm")}</span>
+								</>
+							)}
 							{gig.venue && (
 								<>
 									<span>•</span>
@@ -139,13 +147,15 @@ const HomePage = () => {
 
 	return (
 		<div className="flex flex-col items-center justify-center w-full min-h-full gap-4 pb-24">
-			<div className="absolute top-0 w-full h-full pointer-events-none">
+			<div className="absolute -top-20 w-full h-full pointer-events-none">
 				<img
 					src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
 					alt=""
 					className="absolute top-0 left-0 w-full h-full object-cover -z-1 mask-b-from-0% mask-t-from-0% opacity-30 "
 				/>
-				<AnimatedBackgroundLines />
+				<div className="absolute top-0 right-0 w-full h-full min-w-5xl">
+					<AnimatedBackgroundLines />
+				</div>
 			</div>
 			<img src="/images/logo-full.svg" alt="Banner" className="h-3 opacity-50" />
 			<h1 className="text-5xl sm:text-7xl font-heading text-center">Pick a Band</h1>
@@ -167,6 +177,8 @@ const HomePage = () => {
 					<CreateBandCard />
 				</div>
 			)}
+
+			<div className="w-full h-px bg-zinc-800 mt-16"></div>
 
 			<UpcomingGigs />
 		</div>

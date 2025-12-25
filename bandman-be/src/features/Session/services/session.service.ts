@@ -284,6 +284,23 @@ class SessionServiceClass {
       triggeredBy,
     };
   }
+
+  async cleanupStaleSessions(): Promise<void> {
+    const twentyFourHoursAgo = new Date(
+      Date.now() - 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    const { error } = await supabase
+      .from(this.tableName)
+      .delete()
+      .lt('started_at', twentyFourHoursAgo);
+
+    if (error) {
+      console.error('Failed to cleanup stale sessions:', error);
+    } else {
+      console.log('Cleaned up stale sessions');
+    }
+  }
 }
 
 export const SessionService = new SessionServiceClass();

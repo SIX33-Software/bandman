@@ -89,7 +89,7 @@ export const BandDetailsPage = () => {
 				<img
 					src={band.image_url}
 					alt={band.name}
-					className="w-full h-1/2 object-cover absolute top-0 left-0 -z-1 mask-b-from-0% mask-t-from-0% opacity-30"
+					className="w-full h-96 object-cover absolute top-0 left-0 -z-1 mask-b-from-0% mask-t-from-0% opacity-20"
 				/>
 			)}
 			{/* Band Header */}

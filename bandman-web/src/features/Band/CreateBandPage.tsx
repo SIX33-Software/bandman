@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { ArrowLeft } from "@mynaui/icons-react";
+import { ArrowLeft, ImageRectangle } from "@mynaui/icons-react";
 import { InputField } from "@/components/ui/InputField";
 import { TextArea } from "@/components/ui/TextArea";
 import { Button } from "@/components/ui/Button";
@@ -92,7 +92,7 @@ export default function CreateBandPage() {
 	}
 
 	return (
-		<div className="max-w-xl mx-auto">
+		<div className="max-w-xl mx-auto pb-20">
 			<Link
 				to={isEditing ? `/bands/${id}` : "/"}
 				className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-8"
@@ -130,14 +130,31 @@ export default function CreateBandPage() {
 					disabled={isLoading}
 					rows={4}
 				/>
-
+				<div className="w-full h-48 flex items-center justify-center relative overflow-hidden">
+					{imageUrl && (
+						<img
+							src={imageUrl}
+							alt="Band"
+							className="absolute w-full h-full object-cover mask-t-from-0% mask-b-from-0% opacity-30"
+						/>
+					)}
+					<div className="w-32 h-32 rounded-3xl bg-zinc-900 relative overflow-hidden border border-zinc-800">
+						{imageUrl ? (
+							<img src={imageUrl} alt="Band" className="w-full h-full object-cover" />
+						) : (
+							<div className="w-full h-full flex items-center justify-center text-zinc-600">
+								<ImageRectangle />
+							</div>
+						)}
+					</div>
+				</div>
 				<InputField
 					label="Image URL"
 					type="url"
 					placeholder="https://example.com/band-image.jpg"
 					value={imageUrl}
 					onChange={setImageUrl}
-					description="Optional: Add a URL to your band's image"
+					description="Optional: Add an image URL to be used as the band avatar and cover."
 					disabled={isLoading}
 				/>
 

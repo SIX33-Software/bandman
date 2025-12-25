@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import { StoreProvider, WebSocketProvider } from "./providers";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { PublicRoute } from "./components/PublicRoute";
+import { CircleNotchSolid } from "@mynaui/icons-react";
 
 const HomePage = lazy(() => import("./features/Home/HomePage.tsx"));
 const LoginPage = lazy(() => import("./features/Auth/LoginPage.tsx"));
@@ -26,7 +27,7 @@ const GigDetailsPage = lazy(() => import("./features/Gig/GigDetailsPage.tsx"));
 
 export const LoadingFallback = () => (
 	<div className="min-h-dvh w-full flex items-center justify-center">
-		<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+		<CircleNotchSolid className="w-8 h-8 animate-spin text-white" />
 	</div>
 );
 
@@ -34,10 +35,11 @@ createRoot(document.getElementById("root")!).render(
 	<StrictMode>
 		<StoreProvider>
 			<WebSocketProvider>
-				<BrowserRouter>
-					<Suspense fallback={<LoadingFallback />}>
+				<Suspense fallback={<LoadingFallback />}>
+					<BrowserRouter>
 						<Routes>
 							{/* Public routes (redirect to home if authenticated) */}
+
 							<Route element={<PublicRoute />}>
 								<Route path="/login" element={<LoginPage />} />
 								<Route path="/signup" element={<SignupPage />} />
@@ -46,6 +48,7 @@ createRoot(document.getElementById("root")!).render(
 							{/* Protected routes (require authentication) */}
 							<Route element={<ProtectedRoute />}>
 								<Route path="/sessions/:id/live" element={<LiveSessionPage />} />
+
 								<Route path="/" element={<App />}>
 									<Route index element={<HomePage />} />
 									<Route path="bands/new" element={<CreateBandPage />} />
@@ -73,8 +76,8 @@ createRoot(document.getElementById("root")!).render(
 								</Route>
 							</Route>
 						</Routes>
-					</Suspense>
-				</BrowserRouter>
+					</BrowserRouter>
+				</Suspense>
 			</WebSocketProvider>
 		</StoreProvider>
 	</StrictMode>

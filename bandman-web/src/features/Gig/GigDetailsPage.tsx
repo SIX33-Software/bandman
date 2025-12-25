@@ -2,6 +2,7 @@ import { useParams, useNavigate, Link } from "react-router";
 import { useGetGigByIdQuery, useDeleteGigMutation } from "@/store/api/gigApi";
 import { Button } from "@/components/ui/Button";
 import { CircleNotchSolid } from "@mynaui/icons-react";
+import dayjs from "dayjs";
 
 const GigDetailsPage = () => {
 	const { bandId, id } = useParams<{ bandId: string; id: string }>();
@@ -37,7 +38,7 @@ const GigDetailsPage = () => {
 				<div>
 					<h1 className="text-3xl font-bold text-white">{gig.name}</h1>
 					<div className="text-zinc-400 mt-2 flex items-center gap-2">
-						<span>{new Date(gig.date).toLocaleDateString()}</span>
+						<span>{dayjs(gig.date).format("ddd D MMM, YYYY")}</span>
 						{gig.start_time && <span>• {gig.start_time}</span>}
 					</div>
 				</div>
@@ -45,52 +46,52 @@ const GigDetailsPage = () => {
 					<Link to={`/bands/${bandId}/gigs/${id}/edit`}>
 						<Button variant="secondary">Edit</Button>
 					</Link>
-					<Button variant="ghost" onClick={handleDelete} disabled={isDeleting} className="text-red-400 hover:text-red-300 hover:bg-red-400/10">
+					<Button
+						variant="ghost"
+						onClick={handleDelete}
+						disabled={isDeleting}
+						className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
+					>
 						{isDeleting ? "Deleting..." : "Delete"}
 					</Button>
 				</div>
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-				<div className="space-y-6">
-					<div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6">
-						<h3 className="text-lg font-medium text-white mb-4">Details</h3>
-						<dl className="space-y-4">
-							<div>
-								<dt className="text-sm text-zinc-500">Venue</dt>
-								<dd className="text-white">{gig.venue || "Not specified"}</dd>
-							</div>
-							<div>
-								<dt className="text-sm text-zinc-500">Address</dt>
-								<dd className="text-white">{gig.address || "Not specified"}</dd>
-							</div>
-							<div>
-								<dt className="text-sm text-zinc-500">Price</dt>
-								<dd className="text-white">
-									{gig.price
-										? new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" }).format(gig.price)
-										: "TBD"}
-								</dd>
-							</div>
-							<div>
-								<dt className="text-sm text-zinc-500">Status</dt>
-								<dd className="text-white capitalize">{gig.status}</dd>
-							</div>
-						</dl>
-					</div>
+			<div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+				<div>
+					<dt className="text-sm text-zinc-500 mb-1">Venue</dt>
+					<dd className="text-white">{gig.venue || "Not specified"}</dd>
 				</div>
-
-				<div className="space-y-6">
-					{gig.notes && (
-						<div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6">
-							<h3 className="text-lg font-medium text-white mb-4">Notes</h3>
-							<p className="text-zinc-300 whitespace-pre-wrap">{gig.notes}</p>
-						</div>
-					)}
+				<div>
+					<dt className="text-sm text-zinc-500 mb-1">Address</dt>
+					<dd className="text-white">{gig.address || "Not specified"}</dd>
+				</div>
+				<div>
+					<dt className="text-sm text-zinc-500 mb-1">Price</dt>
+					<dd className="text-zinc-300 leading-none px-3 py-2 bg-zinc-900 w-fit rounded-lg border border-zinc-800">
+						{gig.price
+							? new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" }).format(gig.price)
+							: "TBD"}
+					</dd>
+				</div>
+				<div>
+					<dt className="text-sm text-zinc-500 mb-1">Status</dt>
+					<dd className="text-white capitalize">{gig.status}</dd>
 				</div>
 			</div>
+
+			{gig.notes && (
+				<>
+					<div className="border-t border-zinc-800 my-8" />
+					<div>
+						<h3 className="text-sm text-yellow-500 mb-2">Notes</h3>
+						<p className="text-zinc-300 whitespace-pre-wrap">{gig.notes}</p>
+					</div>
+				</>
+			)}
 		</div>
 	);
 };
 
 export default GigDetailsPage;
+

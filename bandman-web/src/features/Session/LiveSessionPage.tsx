@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router";
-import { useGetSessionByIdQuery, useChangeSongMutation, sessionApi } from "@/store/api/sessionApi";
+import { useGetSessionByIdQuery, sessionApi } from "@/store/api/sessionApi";
 import { useGetSetByIdQuery, useGetSetSongsQuery } from "@/store/api/setApi";
 import { useWebSocket } from "@/providers/WebSocketProvider";
 import { useAuth } from "@/hooks/useAuth";
@@ -35,8 +35,6 @@ const LiveSessionPage = () => {
 		skip: !session?.set_id,
 	});
 	const songsData = songsResponse?.data;
-
-	const [changeSong] = useChangeSongMutation();
 
 	const [isQuickListOpen, setIsQuickListOpen] = useState(false);
 	const [transpose, setTranspose] = useState(0);
@@ -103,41 +101,31 @@ const LiveSessionPage = () => {
 		}
 	}, [sessionId, joinSession, leaveSession, socket, refetchSession, navigate, session?.band_id, dispatch, user?.id]);
 
-	const handleNextSong = async () => {
-		if (!session || !songs.length) return;
-		const nextPos = currentSongPosition + 1;
-		if (nextPos >= songs.length) return;
-
-		const nextSong = songs.find((s) => s.position === nextPos);
-		if (nextSong) {
-			await changeSong({
-				id: session.id,
-				data: { song_id: nextSong.song_id, position: nextPos },
-			});
-			setTranspose(0);
-		}
+	const handleNextSong = () => {
+		if (!session || !socket) return;
+		socket.emit("session:control", {
+			sessionId: session.id,
+			action: "next",
+		});
+		setTranspose(0);
 	};
 
-	const handlePrevSong = async () => {
-		if (!session || !songs.length) return;
-		const prevPos = currentSongPosition - 1;
-		if (prevPos < 0) return;
-
-		const prevSong = songs.find((s) => s.position === prevPos);
-		if (prevSong) {
-			await changeSong({
-				id: session.id,
-				data: { song_id: prevSong.song_id, position: prevPos },
-			});
-			setTranspose(0);
-		}
+	const handlePrevSong = () => {
+		if (!session || !socket) return;
+		socket.emit("session:control", {
+			sessionId: session.id,
+			action: "previous",
+		});
+		setTranspose(0);
 	};
 
-	const handleSelectSong = async (songId: string, position: number) => {
-		if (!session) return;
-		await changeSong({
-			id: session.id,
-			data: { song_id: songId, position },
+	const handleSelectSong = (songId: string, position: number) => {
+		if (!session || !socket) return;
+		socket.emit("session:control", {
+			sessionId: session.id,
+			action: "changeSong",
+			songId,
+			position,
 		});
 		setIsQuickListOpen(false);
 		setTranspose(0);
@@ -172,7 +160,7 @@ const LiveSessionPage = () => {
 	const isOwner = session.started_by === user?.id;
 
 	return (
-		<div className="h-dvh w-full bg-zinc-950 flex flex-col overflow-hidden relative">
+		<div className="fixed inset-0 h-dvh w-full bg-zinc-950 flex flex-col overflow-hidden">
 			{/* Header */}
 			<header className="h-14 border-b border-zinc-800 flex items-center justify-between px-4 bg-zinc-900/50 backdrop-blur-md z-10">
 				<div className="flex items-center gap-3 flex-1 min-w-0">
@@ -210,6 +198,7 @@ const LiveSessionPage = () => {
 					<motion.div
 						key={currentSong?.id || "empty"}
 						className="h-full w-full overflow-y-auto p-4 pb-48 pt-12"
+						style={{ touchAction: "pan-y" }}
 						initial={{ opacity: 0, x: 20 }}
 						animate={{ opacity: 1, x: 0 }}
 						exit={{ opacity: 0, x: -20 }}
