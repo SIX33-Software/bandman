@@ -7,6 +7,11 @@ app = 'bandman'
 primary_region = 'fra'
 
 [build]
+  [build.args]
+    VITE_SUPABASE_URL = "https://tnrnijxvbloibphlurip.supabase.co"
+    VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRucm5panh2YmxvaWJwaGx1cmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0OTAwNzMsImV4cCI6MjA4MjA2NjA3M30.oqJFIXXh4nw8uY5cBI4gP7pbcwu8OagedQmrMO5XA88"
+    VITE_API_BASE_URL = "https://bandman-be.fly.dev"
+
 
 [http_service]
   internal_port = 8080
