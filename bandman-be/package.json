@@ -6,7 +6,7 @@
   "author": "633 Software",
   "license": "ISC",
   "scripts": {
-    "start": "npm run build && npm run serve",
+    "start": "ts-node -r tsconfig-paths/register src/index.ts",
     "dev": "nodemon",
     "build": "tsc",
     "serve": "node dist/index.js",
@@ -28,7 +28,6 @@
     "@types/node": "^25.0.3",
     "@types/socket.io": "^3.0.1",
     "nodemon": "^3.1.11",
-    "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "dependencies": {
@@ -41,6 +40,7 @@
     "reflect-metadata": "^0.2.2",
     "routing-controllers": "^0.11.3",
     "socket.io": "^4.8.2",
-    "tsconfig-paths": "^4.2.0"
+    "tsconfig-paths": "^4.2.0",
+    "ts-node": "^10.9.2"
   }
 }
