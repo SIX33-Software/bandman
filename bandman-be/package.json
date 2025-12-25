@@ -6,7 +6,7 @@
   "author": "633 Software",
   "license": "ISC",
   "scripts": {
-    "start": "ts-node -r tsconfig-paths/register src/index.ts",
+    "start": "npm run build && npm run serve",
     "dev": "nodemon",
     "build": "tsc",
     "serve": "node dist/index.js",
